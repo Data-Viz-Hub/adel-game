@@ -3,56 +3,53 @@
 // ============================================================
 
 export const AGENCIES = [
-  { id: 'a01', name: 'Ministry of Finance', sensitive: false, dataClassification: 'confidential' },
-  { id: 'a02', name: 'Ministry of Justice', sensitive: false, dataClassification: 'internal' },
-  { id: 'a03', name: 'Ministry of Health', sensitive: false, dataClassification: 'confidential' },
-  { id: 'a04', name: 'Ministry of Education', sensitive: false, dataClassification: 'internal' },
-  { id: 'a05', name: 'Ministry of Labor', sensitive: false, dataClassification: 'internal' },
-  { id: 'a06', name: 'Ministry of Economy', sensitive: false, dataClassification: 'internal' },
-  { id: 'a07', name: 'Ministry of Transport', sensitive: false, dataClassification: 'public' },
-  { id: 'a08', name: 'Ministry of Environment', sensitive: false, dataClassification: 'public' },
-  { id: 'a09', name: 'Ministry of Culture', sensitive: false, dataClassification: 'public' },
-  { id: 'a10', name: 'Ministry of Agriculture', sensitive: false, dataClassification: 'internal' },
-  { id: 'a11', name: 'Ministry of Defense', sensitive: true, dataClassification: 'secret' },
-  { id: 'a12', name: 'Ministry of Interior', sensitive: true, dataClassification: 'secret' },
-  { id: 'a13', name: 'Police of Armenia', sensitive: true, dataClassification: 'secret' },
-  { id: 'a14', name: 'National Security Service', sensitive: true, dataClassification: 'secret' },
-  { id: 'a15', name: 'Nuclear Safety Authority', sensitive: true, dataClassification: 'secret' },
-  { id: 'a16', name: 'State Revenue Committee', sensitive: false, dataClassification: 'confidential' },
-  { id: 'a17', name: 'Cadastre Committee', sensitive: false, dataClassification: 'confidential' },
-  { id: 'a18', name: 'Civil Aviation Authority', sensitive: false, dataClassification: 'internal' },
-  { id: 'a19', name: 'State Employment Agency', sensitive: false, dataClassification: 'internal' },
-  { id: 'a20', name: 'Social Insurance Fund', sensitive: false, dataClassification: 'confidential' },
+  // Ministries (core)
+  { id: 'a01', name: 'Ministry of Finance',           sensitive: false, dataClassification: 'confidential' },
+  { id: 'a02', name: 'Ministry of Justice',           sensitive: false, dataClassification: 'internal' },
+  { id: 'a03', name: 'Ministry of Health',            sensitive: false, dataClassification: 'confidential' },
+  { id: 'a04', name: 'Ministry of Education',         sensitive: false, dataClassification: 'internal' },
+  { id: 'a05', name: 'Ministry of Labor',             sensitive: false, dataClassification: 'internal' },
+  { id: 'a06', name: 'Ministry of Economy',           sensitive: false, dataClassification: 'internal' },
+  { id: 'a07', name: 'Ministry of Transport',         sensitive: false, dataClassification: 'public' },
+  { id: 'a10', name: 'Ministry of Agriculture',       sensitive: false, dataClassification: 'internal' },
+  // Sensitive / security (must go to Hybrid)
+  { id: 'a11', name: 'Ministry of Defense',           sensitive: true,  dataClassification: 'secret' },
+  { id: 'a12', name: 'Ministry of Interior',          sensitive: true,  dataClassification: 'secret' },
+  { id: 'a13', name: 'Police of Armenia',             sensitive: true,  dataClassification: 'secret' },
+  { id: 'a14', name: 'National Security Service',     sensitive: true,  dataClassification: 'secret' },
+  { id: 'a26', name: 'Anti-Corruption Committee',     sensitive: true,  dataClassification: 'confidential' },
+  // Revenue & finance regulators
+  { id: 'a16', name: 'State Revenue Committee',       sensitive: false, dataClassification: 'confidential' },
+  { id: 'a22', name: 'Central Bank of Armenia',       sensitive: false, dataClassification: 'confidential' },
+  // Land & property
+  { id: 'a17', name: 'Cadastre Committee',            sensitive: false, dataClassification: 'confidential' },
+  { id: 'a24', name: 'State Property Management',     sensitive: false, dataClassification: 'internal' },
+  // Social & employment
+  { id: 'a19', name: 'State Employment Agency',       sensitive: false, dataClassification: 'internal' },
+  { id: 'a20', name: 'Social Insurance Fund',         sensitive: false, dataClassification: 'confidential' },
+  // Civil registration & migration
+  { id: 'a18', name: 'Civil Aviation Authority',      sensitive: false, dataClassification: 'internal' },
+  { id: 'a33', name: 'State Migration Service',       sensitive: false, dataClassification: 'confidential' },
+  { id: 'a32', name: "Prime Minister's Office",       sensitive: false, dataClassification: 'confidential' },
+  // Courts & oversight
+  { id: 'a29', name: 'Constitutional Court',          sensitive: false, dataClassification: 'public' },
+  // Regulators & inspectorates
   { id: 'a21', name: 'Public Services Regulatory Commission', sensitive: false, dataClassification: 'public' },
-  { id: 'a22', name: 'Central Bank of Armenia', sensitive: false, dataClassification: 'confidential' },
-  { id: 'a23', name: 'National Statistics Service', sensitive: false, dataClassification: 'public' },
-  { id: 'a24', name: 'State Property Management Dept', sensitive: false, dataClassification: 'internal' },
-  { id: 'a25', name: 'Intellectual Property Agency', sensitive: false, dataClassification: 'public' },
-  { id: 'a26', name: 'Anti-Corruption Committee', sensitive: true, dataClassification: 'confidential' },
-  { id: 'a27', name: 'Investigative Committee', sensitive: true, dataClassification: 'secret' },
-  { id: 'a28', name: 'Prosecutor General Office', sensitive: true, dataClassification: 'secret' },
-  { id: 'a29', name: 'Constitutional Court', sensitive: false, dataClassification: 'public' },
-  { id: 'a30', name: 'Court of Cassation', sensitive: false, dataClassification: 'public' },
-  { id: 'a31', name: 'National Assembly Secretariat', sensitive: false, dataClassification: 'internal' },
-  { id: 'a32', name: "Prime Minister's Office", sensitive: false, dataClassification: 'confidential' },
-  { id: 'a33', name: 'State Migration Service', sensitive: false, dataClassification: 'confidential' },
-  { id: 'a34', name: 'Urban Development Committee', sensitive: false, dataClassification: 'internal' },
-  { id: 'a35', name: 'Environmental Inspectorate', sensitive: false, dataClassification: 'public' },
-  { id: 'a36', name: 'Food Safety Inspectorate', sensitive: false, dataClassification: 'internal' },
-  { id: 'a37', name: 'Emergency Management Agency', sensitive: false, dataClassification: 'internal' },
-  { id: 'a38', name: 'Tourism Committee', sensitive: false, dataClassification: 'public' },
-  { id: 'a39', name: 'Youth Affairs Committee', sensitive: false, dataClassification: 'public' },
-  { id: 'a40', name: 'Sports & Recreation Committee', sensitive: false, dataClassification: 'public' },
-  { id: 'a41', name: 'Diaspora Affairs Office', sensitive: false, dataClassification: 'public' },
-  { id: 'a42', name: 'E-Government Infrastructure Center', sensitive: false, dataClassification: 'internal' },
-];
+  { id: 'a35', name: 'Environmental Inspectorate',    sensitive: false, dataClassification: 'public' },
+  { id: 'a36', name: 'Food Safety Inspectorate',      sensitive: false, dataClassification: 'internal' },
+  { id: 'a37', name: 'Emergency Management Agency',   sensitive: false, dataClassification: 'internal' },
+  // Statistics & e-gov
+  { id: 'a23', name: 'National Statistics Service',   sensitive: false, dataClassification: 'public' },
+  { id: 'a34', name: 'Urban Development Committee',   sensitive: false, dataClassification: 'internal' },
+  { id: 'a42', name: 'E-Gov Infrastructure Center',  sensitive: false, dataClassification: 'internal' },
+]; // 30 agencies total
 
 export const INFRASTRUCTURE_ZONES = [
-  { id: 'cloud_a', name: 'Public Cloud A', type: 'cloud', capacity: 15, description: 'Modern cloud infrastructure — scalable, cost-effective' },
-  { id: 'cloud_b', name: 'Public Cloud B', type: 'cloud', capacity: 15, description: 'Redundant cloud infrastructure — disaster recovery ready' },
-  { id: 'hybrid', name: 'Hybrid Secure Zone', type: 'hybrid', capacity: 8, description: 'For sensitive agencies — private cloud + dedicated security' },
-  { id: 'legacy', name: 'Legacy Server Room', type: 'legacy', capacity: 4, description: 'Existing on-premise — no migration needed but limited capability' },
-];
+  { id: 'cloud_a', name: 'Public Cloud A',     type: 'cloud',  capacity: 11, description: 'Modern cloud infrastructure — scalable, cost-effective' },
+  { id: 'cloud_b', name: 'Public Cloud B',     type: 'cloud',  capacity: 11, description: 'Redundant cloud infrastructure — disaster recovery ready' },
+  { id: 'hybrid',  name: 'Hybrid Secure Zone', type: 'hybrid', capacity: 6,  description: 'For sensitive agencies — private cloud + dedicated security' },
+  { id: 'legacy',  name: 'Legacy Server Room', type: 'legacy', capacity: 4,  description: 'Existing on-premise — no migration needed but limited capability' },
+]; // Total capacity 32 — enough for all 30 agencies
 
 export const DATA_FIELDS = [
   {
@@ -161,16 +158,16 @@ export const USEFUL_CONNECTIONS = [
 ];
 
 export const SERVICE_TOOLS = [
-  { id: 'st01', name: 'e-Identity Gateway', category: 'Shared Service', maxAdopters: 42, requiresEid: false, requiresAdel: true, deployOrder: 1, description: 'Unified authentication for all digital services', cost: 3 },
-  { id: 'st02', name: 'Digital Profile (My Data Portal)', category: 'Digital Profile', maxAdopters: 35, requiresEid: true, requiresAdel: true, minAdelConnections: 5, deployOrder: 2, description: 'Citizens access their data held by government', cost: 3 },
-  { id: 'st03', name: 'No-Code Service Builder', category: 'No-Code Platform', maxAdopters: 30, requiresEid: false, requiresAdel: false, deployOrder: 1, description: 'Drag-and-drop form builder for agency services', cost: 3 },
-  { id: 'st04', name: 'Notification Engine', category: 'Shared Service', maxAdopters: 40, requiresEid: false, requiresAdel: false, requiresHub: true, deployOrder: 2, description: 'Push notifications: SMS, email, in-app', cost: 3 },
-  { id: 'st05', name: 'Payment Gateway', category: 'Shared Service', maxAdopters: 38, requiresEid: false, requiresAdel: false, deployOrder: 1, description: 'Unified government payment processing', cost: 3 },
-  { id: 'st06', name: 'e-Signature Service', category: 'Shared Service', maxAdopters: 25, requiresEid: true, requiresAdel: false, deployOrder: 2, description: 'Legally binding digital signatures', cost: 3 },
-  { id: 'st07', name: 'Analytics & BI Platform', category: 'Shared Service', maxAdopters: 20, requiresEid: false, requiresAdel: false, requiresMyData: true, deployOrder: 3, description: 'Cross-agency data analytics dashboard', cost: 3 },
-  { id: 'st08', name: 'Service Registry', category: 'Shared Service', maxAdopters: 42, requiresEid: false, requiresAdel: false, deployOrder: 1, description: 'Central catalog of all government services', cost: 3 },
-  { id: 'st09', name: 'Document Vault', category: 'Digital Profile', maxAdopters: 30, requiresEid: true, requiresAdel: false, deployOrder: 2, description: 'Secure digital storage for citizen documents', cost: 3 },
-  { id: 'st10', name: 'Interoperability Sandbox', category: 'No-Code Platform', maxAdopters: 15, requiresEid: false, requiresAdel: true, deployOrder: 2, description: 'Testing environment for agency integrations', cost: 3 },
+  { id: 'st01', name: 'e-Identity Gateway',            category: 'Shared Service',   maxAdopters: 30, requiresEid: false, requiresAdel: true,                      deployOrder: 1, description: 'Unified authentication for all digital services',      cost: 3 },
+  { id: 'st02', name: 'Digital Profile (My Data)',      category: 'Digital Profile',  maxAdopters: 24, requiresEid: true,  requiresAdel: true, minAdelConnections: 5, deployOrder: 2, description: 'Citizens access their data held by government',         cost: 3 },
+  { id: 'st03', name: 'No-Code Service Builder',        category: 'No-Code Platform', maxAdopters: 22, requiresEid: false, requiresAdel: false,                     deployOrder: 1, description: 'Drag-and-drop form builder for agency services',         cost: 3 },
+  { id: 'st04', name: 'Notification Engine',            category: 'Shared Service',   maxAdopters: 28, requiresEid: false, requiresAdel: false, requiresHub: true,    deployOrder: 2, description: 'Push notifications: SMS, email, in-app',                cost: 3 },
+  { id: 'st05', name: 'Payment Gateway',                category: 'Shared Service',   maxAdopters: 26, requiresEid: false, requiresAdel: false,                     deployOrder: 1, description: 'Unified government payment processing',                   cost: 3 },
+  { id: 'st06', name: 'e-Signature Service',            category: 'Shared Service',   maxAdopters: 18, requiresEid: true,  requiresAdel: false,                     deployOrder: 2, description: 'Legally binding digital signatures',                     cost: 3 },
+  { id: 'st07', name: 'Analytics & BI Platform',        category: 'Shared Service',   maxAdopters: 15, requiresEid: false, requiresAdel: false, requiresMyData: true, deployOrder: 3, description: 'Cross-agency data analytics dashboard',                  cost: 3 },
+  { id: 'st08', name: 'Service Registry',               category: 'Shared Service',   maxAdopters: 30, requiresEid: false, requiresAdel: false,                     deployOrder: 1, description: 'Central catalog of all government services',             cost: 3 },
+  { id: 'st09', name: 'Document Vault',                 category: 'Digital Profile',  maxAdopters: 22, requiresEid: true,  requiresAdel: false,                     deployOrder: 2, description: 'Secure digital storage for citizen documents',           cost: 3 },
+  { id: 'st10', name: 'Interoperability Sandbox',       category: 'No-Code Platform', maxAdopters: 12, requiresEid: false, requiresAdel: true,                      deployOrder: 2, description: 'Testing environment for agency integrations',            cost: 3 },
 ];
 
 export const GOVERNMENT_SERVICES = [

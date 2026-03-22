@@ -38,7 +38,7 @@ export default function Chapter1_Infrastructure({ state, dispatch }) {
     <div style={{ padding: '20px 0' }}>
       <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 1 — Infrastructure</h2>
       <p style={{ color: C.MUTED, marginBottom: 16, fontSize: 13, lineHeight: 1.6 }}>
-        Migrate 42 agencies to cloud zones. Sensitive agencies (🔒) require Hybrid. Budget: Cloud=2, Hybrid=3, Legacy=free.
+        Migrate 30 agencies to cloud zones. Sensitive agencies (🔒) require Hybrid. Budget: Cloud=2, Hybrid=3, Legacy=free.
       </p>
 
       <div style={{ marginBottom: 20 }}>

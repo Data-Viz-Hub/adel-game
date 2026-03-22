@@ -1,6 +1,7 @@
 import { useReducer, useState } from 'react';
 import { gameReducer, createInitialState, getLayerProgress, isChapterUnlocked, getLockReason } from './gameReducer';
 import { C } from './colors';
+import IntroScreen from './components/IntroScreen';
 import TopBar from './components/TopBar';
 import Navigation from './components/Navigation';
 import NotificationBar from './components/NotificationBar';
@@ -15,7 +16,7 @@ import Chapter7_Legal from './components/chapters/Chapter7_Legal';
 
 const CHAPTER_INFO = [
   null, // 1-indexed
-  { name: 'Infrastructure',    icon: '🏗️', desc: 'Migrate 42 government agencies to cloud infrastructure' },
+  { name: 'Infrastructure',    icon: '🏗️', desc: 'Migrate 30 government agencies to cloud infrastructure' },
   { name: 'Data Layer',        icon: '🗄️', desc: 'Standardize data fields and register in the National Data Catalog' },
   { name: 'ADEL Network',      icon: '🔗', desc: 'Connect agencies via the ADEL data exchange hub' },
   { name: 'Application Services', icon: '⚙️', desc: 'Deploy and adopt shared digital service tools' },
@@ -25,9 +26,12 @@ const CHAPTER_INFO = [
 ];
 
 export default function App() {
+  const [started, setStarted] = useState(false);
   const [state, dispatch] = useReducer(gameReducer, null, createInitialState);
   const [showVictory, setShowVictory] = useState(false);
   const [victoryShown, setVictoryShown] = useState(false);
+
+  if (!started) return <IntroScreen onStart={() => setStarted(true)} />;
 
   if (state.victoryUnlocked && !victoryShown && !showVictory) {
     setShowVictory(true);

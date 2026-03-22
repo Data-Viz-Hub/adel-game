@@ -232,7 +232,7 @@ export function gameReducer(state, action) {
       // Count current zone occupancy
       const zoneCounts = { cloud_a: 0, cloud_b: 0, hybrid: 0, legacy: 0 };
       state.agencies.forEach(a => { if (a.zone) zoneCounts[a.zone]++; });
-      const capacities = { cloud_a: 15, cloud_b: 15, hybrid: 8, legacy: 4 };
+      const capacities = { cloud_a: 11, cloud_b: 11, hybrid: 6, legacy: 4 };
 
       if (zoneCounts[zoneId] >= capacities[zoneId] && agency.zone !== zoneId) {
         return { ...state, notifications: addNotification(state, `Zone ${zoneId} is at full capacity!`, 'error') };
