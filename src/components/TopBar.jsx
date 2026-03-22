@@ -1,57 +1,65 @@
+import { C } from '../colors';
+
 export default function TopBar({ state }) {
   const metrics = [
-    { label: 'Citizen Satisfaction', value: state.citizenSatisfaction, unit: '%', color: '#2dd4bf', icon: '😊' },
-    { label: 'Interoperability', value: state.interoperabilityScore, unit: '%', color: '#60a5fa', icon: '🔗' },
-    { label: 'Duplicate Records', value: state.duplicatesRemaining, unit: '', color: '#f87171', icon: '📋', invert: true },
-    { label: 'Trust Index', value: state.trustIndex, unit: '%', color: '#f59e0b', icon: '🛡️' },
-    { label: 'Budget', value: state.budget, unit: '💰', color: '#4ade80', icon: '💼' },
+    { label: 'Satisfaction',   value: state.citizenSatisfaction,  unit: '%',  icon: '😊' },
+    { label: 'Interop',        value: state.interoperabilityScore, unit: '%',  icon: '🔗' },
+    { label: 'Duplicates',     value: state.duplicatesRemaining,   unit: '',   icon: '📋' },
+    { label: 'Trust',          value: state.trustIndex,            unit: '%',  icon: '🛡️' },
+    { label: 'Budget',         value: state.budget,                unit: '💰', icon: null },
   ];
 
   return (
     <div style={{
       position: 'sticky', top: 0, zIndex: 100,
-      background: '#070d1a',
-      borderBottom: '1px solid #1e293b',
-      padding: '0 24px',
+      background: C.BG,
+      borderBottom: `2px solid ${C.BLUE_DIM}`,
     }}>
       <div style={{
-        maxWidth: 1400, margin: '0 auto',
+        maxWidth: 1200, margin: '0 auto',
+        padding: '0 16px',
         display: 'flex', alignItems: 'center', gap: 12,
-        height: 56,
+        height: 52,
       }}>
         {/* Logo */}
-        <div style={{ marginRight: 8 }}>
+        <div style={{ flexShrink: 0 }}>
           <span style={{
             fontFamily: "'Cormorant Garamond', serif",
-            fontSize: 20, fontWeight: 700, color: '#f1f5f9', letterSpacing: '0.06em',
+            fontSize: 20, fontWeight: 700,
+            color: C.ORANGE, letterSpacing: '0.05em',
           }}>ADEL</span>
-          <span style={{ fontSize: 10, color: '#475569', marginLeft: 6, letterSpacing: '0.05em' }}>
-            DIGITAL ARMENIA
-          </span>
         </div>
 
-        <div style={{ width: 1, height: 32, background: '#1e293b' }} />
+        <div style={{ width: 1, height: 28, background: C.BORDER, flexShrink: 0 }} />
 
-        {/* Metrics */}
+        {/* Metrics — scroll on mobile */}
         <div style={{
-          flex: 1, display: 'flex', gap: 4, justifyContent: 'flex-end', flexWrap: 'wrap',
+          flex: 1,
+          display: 'flex', gap: 6,
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
         }}>
           {metrics.map(m => (
             <div key={m.label} style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '6px 14px', background: '#0f172a',
-              border: '1px solid #1e293b', borderRadius: 8,
-              minWidth: 130,
+              flexShrink: 0,
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '4px 10px',
+              background: C.CARD,
+              border: `1px solid ${C.BORDER}`,
+              borderRadius: 6,
+              minWidth: 0,
             }}>
-              <span style={{ fontSize: 14 }}>{m.icon}</span>
+              {m.icon && <span style={{ fontSize: 13 }}>{m.icon}</span>}
               <div>
-                <div style={{ fontSize: 9, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                <div style={{ fontSize: 9, color: C.MUTED, textTransform: 'uppercase', letterSpacing: '0.06em', lineHeight: 1 }}>
                   {m.label}
                 </div>
                 <div style={{
-                  fontSize: 16, fontWeight: 700, color: m.color,
+                  fontSize: 15, fontWeight: 700,
+                  color: C.ORANGE,
                   fontFamily: "'DM Mono', monospace",
-                  lineHeight: 1,
+                  lineHeight: 1.1,
                 }}>
                   {m.value}{m.unit}
                 </div>
@@ -60,13 +68,14 @@ export default function TopBar({ state }) {
           ))}
         </div>
 
-        {/* Turn counter */}
+        {/* Turn */}
         <div style={{
-          padding: '6px 14px', background: '#0f172a',
-          border: '1px solid #1e293b', borderRadius: 8,
-          fontSize: 12, color: '#475569',
+          flexShrink: 0,
+          padding: '4px 10px', background: C.CARD,
+          border: `1px solid ${C.BORDER}`, borderRadius: 6,
+          fontSize: 11, color: C.MUTED,
         }}>
-          Turn <span style={{ color: '#94a3b8', fontWeight: 700 }}>{state.turn}</span>
+          T<span style={{ color: C.TEXT, fontWeight: 700 }}>{state.turn}</span>
         </div>
       </div>
     </div>

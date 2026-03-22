@@ -1,43 +1,42 @@
-const TYPE_STYLES = {
-  success: { border: '#4ade80', bg: '#0a1e0f', color: '#4ade80', icon: '✓' },
-  error:   { border: '#ef4444', bg: '#1e0a0a', color: '#fca5a5', icon: '✗' },
-  warning: { border: '#f59e0b', bg: '#1a1200', color: '#fde68a', icon: '⚠️' },
-  info:    { border: '#60a5fa', bg: '#0a1220', color: '#93c5fd', icon: 'ℹ' },
+import { C } from '../colors';
+
+const TYPE = {
+  success: { border: C.BLUE,   bg: `${C.BLUE_DIM}55`,  color: '#93C5FD', icon: '✓'  },
+  error:   { border: '#E53E3E', bg: '#2D0A0A',          color: '#FCA5A5', icon: '✗'  },
+  warning: { border: C.ORANGE,  bg: `${C.ORANGE}11`,    color: C.ORANGE,  icon: '⚠'  },
+  info:    { border: C.BLUE,    bg: `${C.BLUE_DIM}33`,  color: C.MUTED,   icon: 'ℹ'  },
 };
 
 export default function NotificationBar({ notifications, dispatch }) {
   if (!notifications?.length) return null;
-
   return (
     <div style={{
-      position: 'fixed', bottom: 20, right: 20,
-      display: 'flex', flexDirection: 'column', gap: 8,
-      zIndex: 1000, maxWidth: 380,
+      position: 'fixed', bottom: 16, right: 16,
+      display: 'flex', flexDirection: 'column', gap: 6,
+      zIndex: 500, maxWidth: 'min(360px, calc(100vw - 32px))',
     }}>
       {notifications.map(n => {
-        const s = TYPE_STYLES[n.type] || TYPE_STYLES.info;
+        const s = TYPE[n.type] || TYPE.info;
         return (
           <div key={n.id} style={{
             background: s.bg, border: `1px solid ${s.border}`,
-            borderRadius: 8, padding: '10px 14px',
-            display: 'flex', alignItems: 'flex-start', gap: 10,
-            boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+            borderRadius: 7, padding: '9px 12px',
+            display: 'flex', alignItems: 'flex-start', gap: 8,
+            boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
             animation: 'slideIn 0.2s ease',
           }}>
-            <span style={{ fontSize: 14, color: s.color, flexShrink: 0, marginTop: 1 }}>{s.icon}</span>
-            <span style={{ fontSize: 13, color: s.color, flex: 1, lineHeight: 1.4 }}>{n.message}</span>
+            <span style={{ fontSize: 13, color: s.color, flexShrink: 0, marginTop: 1 }}>{s.icon}</span>
+            <span style={{ fontSize: 12, color: s.color, flex: 1, lineHeight: 1.4 }}>{n.message}</span>
             <button
               onClick={() => dispatch({ type: 'DISMISS_NOTIFICATION', id: n.id })}
               style={{
-                background: 'none', border: 'none', color: '#475569',
-                cursor: 'pointer', fontSize: 16, padding: 0, lineHeight: 1,
-                flexShrink: 0,
+                background: 'none', border: 'none', color: C.FAINT,
+                cursor: 'pointer', fontSize: 16, padding: 0, lineHeight: 1, flexShrink: 0,
               }}
             >×</button>
           </div>
         );
       })}
-      <style>{`@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`}</style>
     </div>
   );
 }

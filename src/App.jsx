@@ -1,5 +1,6 @@
 import { useReducer, useState } from 'react';
 import { gameReducer, createInitialState, getLayerProgress, isChapterUnlocked, getLockReason } from './gameReducer';
+import { C } from './colors';
 import TopBar from './components/TopBar';
 import Navigation from './components/Navigation';
 import NotificationBar from './components/NotificationBar';
@@ -12,20 +13,16 @@ import Chapter5_Channels from './components/chapters/Chapter5_Channels';
 import Chapter6_LifeEvents from './components/chapters/Chapter6_LifeEvents';
 import Chapter7_Legal from './components/chapters/Chapter7_Legal';
 
-const CHAPTER_COLORS = {
-  1: '#4ade80', 2: '#a78bfa', 3: '#60a5fa', 4: '#f59e0b',
-  5: '#fb923c', 6: '#2dd4bf', 7: '#f87171',
-};
-
-const CHAPTER_DESCRIPTIONS = {
-  1: 'Migrate 42 government agencies to cloud infrastructure',
-  2: 'Standardize data fields and build the National Data Catalog',
-  3: 'Connect agencies via ADEL data exchange hub',
-  4: 'Deploy and adopt shared digital service tools',
-  5: 'Assign optimal delivery channels for 16 government services',
-  6: 'Optimize 8 critical citizen life events end-to-end',
-  7: 'Enact foundational laws to govern digital transformation',
-};
+const CHAPTER_INFO = [
+  null, // 1-indexed
+  { name: 'Infrastructure',    icon: '🏗️', desc: 'Migrate 42 government agencies to cloud infrastructure' },
+  { name: 'Data Layer',        icon: '🗄️', desc: 'Standardize data fields and register in the National Data Catalog' },
+  { name: 'ADEL Network',      icon: '🔗', desc: 'Connect agencies via the ADEL data exchange hub' },
+  { name: 'Application Services', icon: '⚙️', desc: 'Deploy and adopt shared digital service tools' },
+  { name: 'Channels',          icon: '📡', desc: 'Assign optimal delivery channels for 16 government services' },
+  { name: 'Life Events',       icon: '🌟', desc: 'Optimize 8 critical citizen life events end-to-end' },
+  { name: 'Legal & Governance',icon: '⚖️', desc: 'Enact foundational laws to govern digital transformation' },
+];
 
 export default function App() {
   const [state, dispatch] = useReducer(gameReducer, null, createInitialState);
@@ -40,25 +37,29 @@ export default function App() {
   const progress = getLayerProgress(state);
   const locked = !isChapterUnlocked(state.activeChapter, progress);
   const lockReasons = getLockReason(state.activeChapter, progress);
+  const info = CHAPTER_INFO[state.activeChapter];
+  const keys = ['infrastructure','dataLayer','interoperability','appServices','channels','lifeEvents','legal'];
 
   function renderChapter() {
     if (locked) {
       return (
-        <div style={{ textAlign: 'center', padding: '80px 24px', color: '#334155' }}>
-          <div style={{ fontSize: 48, marginBottom: 20 }}>🔒</div>
-          <h3 style={{ fontSize: 20, color: '#475569', marginBottom: 12 }}>Chapter Locked</h3>
-          <p style={{ fontSize: 14, color: '#334155', maxWidth: 400, margin: '0 auto 20px' }}>
-            Complete the following requirements to unlock this chapter:
+        <div style={{ textAlign: 'center', padding: '60px 16px' }}>
+          <div style={{ fontSize: 44, marginBottom: 16 }}>🔒</div>
+          <h3 style={{ fontSize: 18, color: C.TEXT, marginBottom: 8 }}>Chapter Locked</h3>
+          <p style={{ fontSize: 13, color: C.MUTED, maxWidth: 360, margin: '0 auto 16px', lineHeight: 1.6 }}>
+            Complete the following to unlock:
           </p>
-          {lockReasons.map((r, i) => (
-            <div key={i} style={{
-              display: 'inline-block', padding: '8px 16px', margin: '4px',
-              background: '#0f172a', border: '1px solid #334155',
-              borderRadius: 20, fontSize: 13, color: '#64748b',
-            }}>
-              • {r}
-            </div>
-          ))}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+            {lockReasons.map((r, i) => (
+              <div key={i} style={{
+                padding: '7px 14px',
+                background: C.CARD, border: `1px solid ${C.BORDER}`,
+                borderRadius: 20, fontSize: 13, color: C.MUTED,
+              }}>
+                • {r}
+              </div>
+            ))}
+          </div>
         </div>
       );
     }
@@ -76,78 +77,70 @@ export default function App() {
     }
   }
 
-  const chapterColor = CHAPTER_COLORS[state.activeChapter];
-
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#060c18',
-      color: '#f1f5f9',
-      fontFamily: "'DM Sans', system-ui, sans-serif",
-    }}>
+    <div style={{ minHeight: '100vh', background: C.BG, color: C.TEXT }}>
       <TopBar state={state} />
       <Navigation state={state} dispatch={dispatch} />
 
       {/* Chapter header */}
       <div style={{
-        borderBottom: `1px solid ${chapterColor}22`,
-        background: `linear-gradient(180deg, ${chapterColor}08 0%, transparent 100%)`,
-        padding: '20px 24px 0',
+        background: C.CARD,
+        borderBottom: `1px solid ${C.BORDER}`,
+        padding: '12px 16px',
       }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingBottom: 16 }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: '50%',
-              background: chapterColor + '22',
-              border: `2px solid ${chapterColor}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 14, fontWeight: 900, color: chapterColor,
-            }}>
-              {state.activeChapter}
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 8,
+            background: C.BLUE_DIM,
+            border: `2px solid ${C.BLUE}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 18, flexShrink: 0,
+          }}>
+            {info?.icon}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: C.ORANGE }}>
+              Layer {state.activeChapter} — {info?.name}
             </div>
-            <div>
-              <div style={{ fontSize: 11, color: chapterColor, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>
-                Layer {state.activeChapter} of 7
-              </div>
-              <div style={{ fontSize: 13, color: '#64748b' }}>
-                {CHAPTER_DESCRIPTIONS[state.activeChapter]}
-              </div>
+            <div style={{ fontSize: 11, color: C.MUTED, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {info?.desc}
             </div>
+          </div>
 
-            {/* Progress rings */}
-            <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-              {[1,2,3,4,5,6,7].map(n => {
-                const keys = ['infrastructure','dataLayer','interoperability','appServices','channels','lifeEvents','legal'];
-                const pct = progress[keys[n-1]] || 0;
-                const c = CHAPTER_COLORS[n];
-                return (
-                  <div key={n} title={`Layer ${n}: ${pct}%`} style={{ cursor: 'pointer' }}
-                    onClick={() => dispatch({ type: 'SET_CHAPTER', chapter: n })}>
-                    <div style={{
-                      width: 28, height: 28, borderRadius: '50%',
-                      background: `conic-gradient(${c} ${pct * 3.6}deg, #1e293b 0deg)`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      <div style={{
-                        width: 20, height: 20, borderRadius: '50%',
-                        background: n === state.activeChapter ? '#0a1628' : '#060c18',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 9, color: n === state.activeChapter ? c : '#475569',
-                        fontWeight: 700,
-                      }}>
-                        {n}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+          {/* Compact progress pills — hide on very small screens */}
+          <div className="nav-bar" style={{
+            display: 'flex', gap: 4, flexShrink: 0,
+            maxWidth: 'min(280px, 40vw)',
+          }}>
+            {[1,2,3,4,5,6,7].map(n => {
+              const pct = progress[keys[n-1]] || 0;
+              const isAct = n === state.activeChapter;
+              return (
+                <div
+                  key={n}
+                  onClick={() => dispatch({ type: 'SET_CHAPTER', chapter: n })}
+                  title={`Layer ${n}: ${pct}%`}
+                  style={{
+                    flexShrink: 0,
+                    width: 26, height: 26, borderRadius: 6,
+                    background: `linear-gradient(to top, ${C.BLUE} ${pct}%, ${C.RAISED} ${pct}%)`,
+                    border: `2px solid ${isAct ? C.ORANGE : C.BORDER}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 8, color: isAct ? C.ORANGE : C.MUTED,
+                    fontWeight: 700, cursor: 'pointer',
+                    transition: 'border-color 0.2s',
+                  }}
+                >
+                  {n}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
 
       {/* Main content */}
-      <main style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px 60px' }}>
+      <main style={{ maxWidth: 1200, margin: '0 auto', padding: '0 16px 60px' }}>
         {renderChapter()}
       </main>
 

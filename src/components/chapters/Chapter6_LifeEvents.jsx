@@ -2,54 +2,35 @@ import { useState } from 'react';
 import ProgressBar from '../shared/ProgressBar';
 import { GOVERNMENT_SERVICES } from '../../gameData';
 import { calcLifeEventsProgress } from '../../gameReducer';
+import { C } from '../../colors';
 
 export default function Chapter6_LifeEvents({ state, dispatch }) {
   const [selected, setSelected] = useState(null);
-  const [animating, setAnimating] = useState(false);
-
+  const [animating, setAnimating] = useState(null);
   const progress = calcLifeEventsProgress(state);
-  const optimized = state.lifeEvents.filter(e => e.optimized).length;
 
   function getBlockers(event) {
-    const blockers = [];
-    const activeConnections = Object.values(state.connections).filter(c => c.active);
-
-    // Check ADEL connections
+    const blockers = new Set();
     event.requiredConnections?.forEach(([a, b]) => {
       const key = [a, b].sort().join('--');
-      const conn = state.connections[key];
-      if (!conn?.active) {
-        const nodeNames = event.agencyNames;
-        blockers.push(`⚠️ Missing ADEL connection — go to Chapter 3`);
-      }
+      if (!state.connections[key]?.active) blockers.add('⚠ Missing ADEL connection — go to Chapter 3');
     });
-
-    // Check data fields
-    event.requiredFields?.forEach(fieldId => {
-      const field = state.dataFields.find(f => f.id === fieldId);
-      if (!field?.cataloged) {
-        blockers.push(`⚠️ "${field?.label || fieldId}" not cataloged — go to Chapter 2`);
-      }
+    event.requiredFields?.forEach(fid => {
+      const f = state.dataFields.find(f => f.id === fid);
+      if (!f?.cataloged) blockers.add(`⚠ "${f?.label}" not cataloged — go to Chapter 2`);
     });
-
-    // Check required tools
-    event.requiredTools?.forEach(toolId => {
-      const tool = state.serviceTools.find(t => t.id === toolId);
-      if (!tool?.deployed) {
-        blockers.push(`⚠️ "${tool?.name || toolId}" not deployed — go to Chapter 4`);
-      }
+    event.requiredTools?.forEach(tid => {
+      const t = state.serviceTools.find(t => t.id === tid);
+      if (!t?.deployed) blockers.add(`⚠ "${t?.name}" not deployed — go to Chapter 4`);
     });
-
-    // Check channel assignment
     if (event.requiredChannel) {
-      const assignment = state.channelAssignments[event.requiredChannel];
-      if (!assignment?.correct) {
+      const asgn = state.channelAssignments[event.requiredChannel];
+      if (!asgn?.correct) {
         const svc = GOVERNMENT_SERVICES.find(s => s.id === event.requiredChannel);
-        blockers.push(`⚠️ Channel for "${svc?.name}" not optimized — go to Chapter 5`);
+        blockers.add(`⚠ Channel for "${svc?.name}" not optimized — go to Chapter 5`);
       }
     }
-
-    return [...new Set(blockers)]; // dedupe
+    return [...blockers];
   }
 
   function handleOptimize(event) {
@@ -57,146 +38,126 @@ export default function Chapter6_LifeEvents({ state, dispatch }) {
     setTimeout(() => {
       dispatch({ type: 'OPTIMIZE_LIFE_EVENT', eventId: event.id });
       setAnimating(null);
-    }, 2000);
+    }, 1800);
   }
 
   return (
-    <div style={{ padding: '24px 0' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 8 }}>
-        <h2 style={{ margin: 0, color: '#2dd4bf', fontSize: 22 }}>Layer 6 — Life Events</h2>
-        <span style={{ color: '#64748b', fontSize: 14 }}>Life Happens</span>
-      </div>
-      <p style={{ color: '#94a3b8', marginBottom: 20, fontSize: 14, lineHeight: 1.6 }}>
-        Transform 8 critical citizen life events from bureaucratic nightmares to seamless digital journeys.
-        Each event requires all dependencies to be in place before optimization.
+    <div style={{ padding: '20px 0' }}>
+      <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 6 — Life Events</h2>
+      <p style={{ color: C.MUTED, marginBottom: 16, fontSize: 13, lineHeight: 1.6 }}>
+        Transform 8 citizen life events from bureaucratic chaos to seamless digital journeys. Each event checks all prior layers.
       </p>
 
       <div style={{ marginBottom: 20 }}>
-        <ProgressBar value={progress} color="#2dd4bf" label="Life Events Progress" height={12} />
-        <div style={{ fontSize: 12, color: '#64748b', marginTop: 6 }}>
-          {optimized}/8 events optimized
-        </div>
+        <ProgressBar value={progress} label={`Life Events — ${state.lifeEvents.filter(e => e.optimized).length}/8 optimized`} height={10} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 14 }}>
+      <div className="grid-auto">
         {state.lifeEvents.map(event => {
           const blockers = event.optimized ? [] : getBlockers(event);
           const canOptimize = blockers.length === 0 && !event.optimized;
-          const isAnimating = animating === event.id;
-          const isSelected = selected === event.id;
+          const isAnim = animating === event.id;
+          const isOpen = selected === event.id;
 
           return (
             <div key={event.id} style={{
-              background: '#111827',
-              border: `2px solid ${event.optimized ? '#2dd4bf66' : isSelected ? '#334155' : '#1e293b'}`,
-              borderRadius: 12, overflow: 'hidden',
-              transition: 'border-color 0.2s',
+              background: C.CARD,
+              border: `2px solid ${event.optimized ? C.BLUE + '66' : isOpen ? C.BORDER : C.BORDER}`,
+              borderRadius: 10, overflow: 'hidden',
             }}>
               {/* Header */}
               <div
-                onClick={() => setSelected(isSelected ? null : event.id)}
+                onClick={() => setSelected(isOpen ? null : event.id)}
                 style={{
-                  padding: '14px 16px', cursor: 'pointer',
-                  background: event.optimized ? '#0a2520' : '#0f172a',
-                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '12px 14px', cursor: 'pointer',
+                  background: event.optimized ? `${C.BLUE_DIM}44` : C.RAISED,
+                  display: 'flex', alignItems: 'center', gap: 10,
                 }}
               >
-                <span style={{ fontSize: 28 }}>{event.icon}</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, color: '#f1f5f9', fontSize: 15 }}>{event.name}</div>
-                  <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{event.description}</div>
+                <span style={{ fontSize: 24, flexShrink: 0 }}>{event.icon}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, color: C.TEXT, fontSize: 13 }}>{event.name}</div>
+                  <div style={{ fontSize: 10, color: C.MUTED, marginTop: 2 }}>{event.description}</div>
                 </div>
-                {event.optimized ? (
-                  <span style={{ color: '#2dd4bf', fontSize: 20 }}>✓</span>
-                ) : (
-                  <span style={{ color: '#334155', fontSize: 16 }}>{isSelected ? '▲' : '▼'}</span>
-                )}
+                {event.optimized
+                  ? <span style={{ color: C.BLUE, fontSize: 18, flexShrink: 0 }}>✓</span>
+                  : <span style={{ color: C.FAINT, fontSize: 14, flexShrink: 0 }}>{isOpen ? '▲' : '▼'}</span>
+                }
               </div>
 
-              {/* Expanded content */}
-              {(isSelected || event.optimized) && (
-                <div style={{ padding: '16px' }}>
+              {/* Expanded */}
+              {(isOpen || event.optimized) && (
+                <div style={{ padding: '14px' }}>
                   {/* Before / After */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+                  <div className="grid-halves" style={{ marginBottom: 12 }}>
                     <div style={{
-                      padding: '12px', background: '#1e0a0a', borderRadius: 8,
-                      border: '1px solid #ef444433',
+                      padding: '10px 12px', background: '#1A0505',
+                      borderRadius: 7, border: `1px solid #E53E3E33`,
                     }}>
-                      <div style={{ fontSize: 11, color: '#ef4444', fontWeight: 700, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                        Current State
+                      <div style={{ fontSize: 9, color: '#FC8181', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Current</div>
+                      <div style={{ fontSize: 22, fontWeight: 900, color: '#FC8181' }}>
+                        {isAnim ? '…' : event.optimized ? event.targetSteps : event.currentSteps}
+                        <span style={{ fontSize: 10, fontWeight: 400, marginLeft: 3 }}>steps</span>
                       </div>
-                      <div style={{ fontSize: 22, fontWeight: 900, color: '#ef4444' }}>
-                        {isAnimating ? '...' : event.optimized ? event.targetSteps : event.currentSteps}
-                        <span style={{ fontSize: 12, fontWeight: 400, marginLeft: 4 }}>steps</span>
-                      </div>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: '#fca5a5', marginTop: 4 }}>
-                        {isAnimating ? '...' : event.optimized ? (event.targetDays === 0 ? 'instant' : `${event.targetDays}d`) : `${event.currentDays}d`}
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#FCA5A5' }}>
+                        {isAnim ? '…' : event.optimized ? (event.targetDays === 0 ? 'instant' : `${event.targetDays}d`) : `${event.currentDays}d`}
                       </div>
                     </div>
                     <div style={{
-                      padding: '12px', background: '#0a201a', borderRadius: 8,
-                      border: '1px solid #2dd4bf33',
+                      padding: '10px 12px', background: `${C.BLUE_DIM}22`,
+                      borderRadius: 7, border: `1px solid ${C.BLUE}33`,
                     }}>
-                      <div style={{ fontSize: 11, color: '#2dd4bf', fontWeight: 700, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                        ADEL Target
-                      </div>
-                      <div style={{ fontSize: 22, fontWeight: 900, color: '#2dd4bf' }}>
+                      <div style={{ fontSize: 9, color: C.BLUE, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>ADEL Target</div>
+                      <div style={{ fontSize: 22, fontWeight: 900, color: C.BLUE }}>
                         {event.targetSteps}
-                        <span style={{ fontSize: 12, fontWeight: 400, marginLeft: 4 }}>steps</span>
+                        <span style={{ fontSize: 10, fontWeight: 400, marginLeft: 3 }}>steps</span>
                       </div>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: '#99f6e4', marginTop: 4 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: C.BLUE }}>
                         {event.targetDays === 0 ? 'instant' : `${event.targetDays}d`}
                       </div>
                     </div>
                   </div>
 
-                  {/* Agencies */}
-                  <div style={{ fontSize: 12, color: '#64748b', marginBottom: 10 }}>
-                    Agencies involved: {event.agencyNames.join(' → ')}
+                  <div style={{ fontSize: 11, color: C.MUTED, marginBottom: 10, lineHeight: 1.5 }}>
+                    {event.agencyNames.join(' → ')}
                   </div>
 
-                  {/* Blockers */}
                   {!event.optimized && blockers.length > 0 && (
                     <div style={{
-                      background: '#1a1200', border: '1px solid #f59e0b44',
-                      borderRadius: 8, padding: '10px 14px', marginBottom: 12,
+                      background: `${C.ORANGE}11`, border: `1px solid ${C.ORANGE}44`,
+                      borderRadius: 7, padding: '10px 12px', marginBottom: 10,
                     }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: '#f59e0b', marginBottom: 6 }}>
-                        Blockers ({blockers.length}):
+                      <div style={{ fontSize: 11, fontWeight: 700, color: C.ORANGE, marginBottom: 5 }}>
+                        {blockers.length} blocker{blockers.length > 1 ? 's' : ''}:
                       </div>
                       {blockers.map((b, i) => (
-                        <div key={i} style={{ fontSize: 12, color: '#fbbf24', marginBottom: 3 }}>{b}</div>
+                        <div key={i} style={{ fontSize: 11, color: C.ORANGE, marginBottom: 2 }}>{b}</div>
                       ))}
                     </div>
                   )}
 
-                  {/* Optimize button */}
-                  {!event.optimized && (
+                  {!event.optimized ? (
                     <button
                       onClick={() => canOptimize && handleOptimize(event)}
-                      disabled={!canOptimize || isAnimating}
+                      disabled={!canOptimize || isAnim}
                       style={{
-                        width: '100%', padding: '12px',
-                        background: canOptimize ? '#0a2520' : '#111',
-                        border: `2px solid ${canOptimize ? '#2dd4bf' : '#334155'}`,
-                        color: canOptimize ? '#2dd4bf' : '#475569',
+                        width: '100%', padding: '11px',
+                        background: canOptimize ? C.BLUE_DIM : C.RAISED,
+                        border: `2px solid ${canOptimize ? C.BLUE : C.BORDER}`,
+                        color: canOptimize ? C.TEXT : C.FAINT,
                         borderRadius: 8, cursor: canOptimize ? 'pointer' : 'not-allowed',
-                        fontSize: 14, fontWeight: 700,
-                        transition: 'all 0.2s',
+                        fontSize: 13, fontWeight: 700,
                       }}
                     >
-                      {isAnimating ? '✨ Optimizing...' :
-                        canOptimize ? '🚀 Optimize Life Event' : `🔒 ${blockers.length} blocker${blockers.length > 1 ? 's' : ''} remaining`}
+                      {isAnim ? '✨ Optimizing…' : canOptimize ? '🚀 Optimize Life Event' : `🔒 ${blockers.length} blocker${blockers.length > 1 ? 's' : ''} remaining`}
                     </button>
-                  )}
-
-                  {event.optimized && (
+                  ) : (
                     <div style={{
-                      padding: '12px', background: '#0a2520',
-                      border: '1px solid #2dd4bf', borderRadius: 8,
-                      textAlign: 'center', color: '#2dd4bf', fontWeight: 700,
+                      padding: '10px', background: `${C.BLUE_DIM}44`,
+                      border: `1px solid ${C.BLUE}`, borderRadius: 7,
+                      textAlign: 'center', color: C.BLUE, fontWeight: 700, fontSize: 12,
                     }}>
-                      ✅ Life event transformed — citizens experience seamless digital journey
+                      ✅ Life event optimized — seamless digital journey
                     </div>
                   )}
                 </div>
