@@ -34,9 +34,12 @@ export function createInitialState() {
     rogueAlertPending: false,
     rogueAlertCount: 0,
     victoryUnlocked: false,
+    gameLost: false,
     connectionModalOpen: null,
     connectionStep: 0,
     notifications: [],
+    // Time system — 730 days = Jan 1 2025 → Jan 1 2027
+    gameDay: 0,
   };
 }
 
@@ -213,12 +216,66 @@ function addNotification(state, message, type = 'info') {
 }
 
 // ============================================================
+// Time helpers
+// ============================================================
+export const GAME_START_DAY = 0;       // = Jan 1, 2025 in game
+export const GAME_DEADLINE_DAY = 730;  // = Jan 1, 2027 (2 years)
+
+export function gameDayToDate(day) {
+  const d = new Date(2025, 0, 1);
+  d.setDate(d.getDate() + day);
+  return d;
+}
+
+export function formatGameDate(day) {
+  return gameDayToDate(day).toLocaleDateString('en-GB', {
+    day: '2-digit', month: 'short', year: 'numeric',
+  });
+}
+
+// Day cost per action type
+const ACTION_DAYS = {
+  ASSIGN_AGENCY_TO_ZONE:   14,  // 2 weeks per migration
+  ALIGN_DATA_FIELD:         7,  // 1 week for alignment work
+  CATALOG_DATA_FIELD:       7,  // 1 week for catalog registration
+  ADVANCE_CONNECTION_STEP: 10,  // ~10 days per connection step
+  DEPLOY_TOOL:             21,  // 3 weeks to deploy a platform
+  ONBOARD_AGENCY:           7,  // 1 week per onboarding batch
+  ASSIGN_CHANNEL:           3,  // 3 days for channel decision
+  OPTIMIZE_LIFE_EVENT:     21,  // 3 weeks for end-to-end journey redesign
+  ENACT_LAW:               14,  // 2 weeks for parliamentary process
+};
+
+function advanceDay(state, actionType) {
+  const days = ACTION_DAYS[actionType] || 0;
+  const newDay = state.gameDay + days;
+  const gameLost = !state.victoryUnlocked && newDay >= GAME_DEADLINE_DAY;
+  return { gameDay: newDay, gameLost: gameLost || state.gameLost };
+}
+
+// ============================================================
 // Reducer
 // ============================================================
 export function gameReducer(state, action) {
   let newState;
 
+  // Stop all actions if game is over
+  if ((state.gameLost || state.victoryUnlocked) &&
+      action.type !== 'SET_CHAPTER' &&
+      action.type !== 'DISMISS_NOTIFICATION' &&
+      action.type !== 'TICK_TIME') {
+    return state;
+  }
+
   switch (action.type) {
+    // --- Time tick (1 real second = 1 game day) ---
+    case 'TICK_TIME': {
+      if (state.gameLost || state.victoryUnlocked) return state;
+      const newDay = state.gameDay + 1;
+      const gameLost = newDay >= GAME_DEADLINE_DAY;
+      return { ...state, gameDay: newDay, gameLost };
+    }
+
     // --- Chapter navigation ---
     case 'SET_CHAPTER':
       return { ...state, activeChapter: action.chapter };
@@ -262,6 +319,7 @@ export function gameReducer(state, action) {
         ),
         trustIndex: trust,
         turn: state.turn + 1,
+        ...advanceDay(state, 'ASSIGN_AGENCY_TO_ZONE'),
       };
       if (msg) newState.notifications = addNotification(newState, msg, 'warning');
       const derived = computeDerivedMetrics(newState);
@@ -284,12 +342,14 @@ export function gameReducer(state, action) {
             f.id === fieldId ? { ...f, aligned: true } : f
           ),
           turn: state.turn + 1,
+          ...advanceDay(state, 'ALIGN_DATA_FIELD'),
           notifications: addNotification(state, `✓ "${field.label}" aligned to standard: ${answer}`, 'success'),
         };
       } else {
         newState = {
           ...state,
           budget: Math.max(0, state.budget - 1),
+          ...advanceDay(state, 'ALIGN_DATA_FIELD'),
           notifications: addNotification(state, `✗ Incorrect — consultant called in to fix the mistake (-1 budget)`, 'error'),
         };
       }
@@ -307,6 +367,7 @@ export function gameReducer(state, action) {
           f.id === fieldId ? { ...f, cataloged: true, catalogMetadata: metadata } : f
         ),
         turn: state.turn + 1,
+        ...advanceDay(state, 'CATALOG_DATA_FIELD'),
         notifications: addNotification(state, `Data field cataloged in National Data Catalog`, 'success'),
       };
       const derived = computeDerivedMetrics(newState);
@@ -328,7 +389,6 @@ export function gameReducer(state, action) {
       const step = state.connectionStep;
 
       if (step === 1) {
-        // cert exchange costs 1 budget
         if (state.budget < 1) {
           return { ...state, notifications: addNotification(state, 'Insufficient budget for certificate!', 'error') };
         }
@@ -336,12 +396,12 @@ export function gameReducer(state, action) {
           ...state,
           budget: state.budget - 1,
           connectionStep: 2,
+          ...advanceDay(state, 'ADVANCE_CONNECTION_STEP'),
         };
         return newState;
       }
 
       if (step === 2) {
-        // final step — activate connection
         const [from, to] = connectionKey.split('--');
         const activeConnections = Object.values(state.connections).filter(c => c.active).length;
         const shouldTriggerRogue = (activeConnections + 1) % 5 === 0;
@@ -360,6 +420,7 @@ export function gameReducer(state, action) {
           rogueAlertPending: shouldTriggerRogue,
           rogueAlertCount: shouldTriggerRogue ? state.rogueAlertCount + 1 : state.rogueAlertCount,
           turn: state.turn + 1,
+          ...advanceDay(state, 'ADVANCE_CONNECTION_STEP'),
           notifications: addNotification(state, `Connection activated!`, 'success'),
         };
         const derived = computeDerivedMetrics(newState);
@@ -407,6 +468,7 @@ export function gameReducer(state, action) {
           t.id === toolId ? { ...t, deployed: true } : t
         ),
         turn: state.turn + 1,
+        ...advanceDay(state, 'DEPLOY_TOOL'),
         notifications: addNotification(state, `${tool.name} deployed!`, 'success'),
       };
       const derived = computeDerivedMetrics(newState);
@@ -425,7 +487,6 @@ export function gameReducer(state, action) {
         return { ...state, notifications: addNotification(state, 'Insufficient budget for onboarding!', 'error') };
       }
 
-      // Calculate adoption multiplier
       let multiplier = 1;
       const digitalIdLaw = state.laws.find(l => l.id === 'law02');
       if (toolId === 'st01' && digitalIdLaw?.bonusApplied) multiplier *= 2;
@@ -443,6 +504,7 @@ export function gameReducer(state, action) {
           t.id === toolId ? { ...t, adopters: newAdopters } : t
         ),
         turn: state.turn + 1,
+        ...advanceDay(state, 'ONBOARD_AGENCY'),
       };
       const derived = computeDerivedMetrics(newState);
       newState = { ...newState, ...derived };
@@ -466,6 +528,7 @@ export function gameReducer(state, action) {
           [serviceId]: { channel, correct },
         },
         turn: state.turn + 1,
+        ...advanceDay(state, 'ASSIGN_CHANNEL'),
         notifications: correct
           ? addNotification(state, `✓ Correct channel for ${svc.name}!`, 'success')
           : addNotification(state, `✗ "${svc.hint}"`, 'warning'),
@@ -485,6 +548,7 @@ export function gameReducer(state, action) {
           e.id === eventId ? { ...e, optimized: true } : e
         ),
         turn: state.turn + 1,
+        ...advanceDay(state, 'OPTIMIZE_LIFE_EVENT'),
         notifications: addNotification(state, '🎉 Life event optimized — citizen journey transformed!', 'success'),
       };
       const derived = computeDerivedMetrics(newState);
@@ -519,6 +583,7 @@ export function gameReducer(state, action) {
         ),
         dataFields: updatedDataFields,
         turn: state.turn + 1,
+        ...advanceDay(state, 'ENACT_LAW'),
         notifications: addNotification(state, msg, bonusApplied ? 'success' : 'warning'),
       };
       const derived = computeDerivedMetrics(newState);

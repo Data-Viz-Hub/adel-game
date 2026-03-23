@@ -1,4 +1,4 @@
-import { useReducer, useState } from 'react';
+import { useReducer, useState, useEffect, useCallback } from 'react';
 import { gameReducer, createInitialState, getLayerProgress, isChapterUnlocked, getLockReason } from './gameReducer';
 import { C } from './colors';
 import IntroScreen from './components/IntroScreen';
@@ -6,6 +6,7 @@ import TopBar from './components/TopBar';
 import Navigation from './components/Navigation';
 import NotificationBar from './components/NotificationBar';
 import VictoryScreen from './components/VictoryScreen';
+import GameOverScreen from './components/GameOverScreen';
 import Chapter1_Infrastructure from './components/chapters/Chapter1_Infrastructure';
 import Chapter2_DataLayer from './components/chapters/Chapter2_DataLayer';
 import Chapter3_Interoperability from './components/chapters/Chapter3_Interoperability';
@@ -15,14 +16,14 @@ import Chapter6_LifeEvents from './components/chapters/Chapter6_LifeEvents';
 import Chapter7_Legal from './components/chapters/Chapter7_Legal';
 
 const CHAPTER_INFO = [
-  null, // 1-indexed
-  { name: 'Infrastructure',    icon: '🏗️', desc: 'Migrate 30 government agencies to cloud infrastructure' },
-  { name: 'Data Layer',        icon: '🗄️', desc: 'Standardize data fields and register in the National Data Catalog' },
-  { name: 'ADEL Network',      icon: '🔗', desc: 'Connect agencies via the ADEL data exchange hub' },
+  null,
+  { name: 'Infrastructure',       icon: '🏗️', desc: 'Migrate 30 government agencies to cloud infrastructure' },
+  { name: 'Data Layer',           icon: '🗄️', desc: 'Standardize data fields and register in the National Data Catalog' },
+  { name: 'ADEL Network',         icon: '🔗', desc: 'Connect agencies via the ADEL data exchange hub' },
   { name: 'Application Services', icon: '⚙️', desc: 'Deploy and adopt shared digital service tools' },
-  { name: 'Channels',          icon: '📡', desc: 'Assign optimal delivery channels for 16 government services' },
-  { name: 'Life Events',       icon: '🌟', desc: 'Optimize 8 critical citizen life events end-to-end' },
-  { name: 'Legal & Governance',icon: '⚖️', desc: 'Enact foundational laws to govern digital transformation' },
+  { name: 'Channels',             icon: '📡', desc: 'Assign optimal delivery channels for 16 government services' },
+  { name: 'Life Events',          icon: '🌟', desc: 'Optimize 8 critical citizen life events end-to-end' },
+  { name: 'Legal & Governance',   icon: '⚖️', desc: 'Enact foundational laws to govern digital transformation' },
 ];
 
 export default function App() {
@@ -31,11 +32,31 @@ export default function App() {
   const [showVictory, setShowVictory] = useState(false);
   const [victoryShown, setVictoryShown] = useState(false);
 
+  // Show intro until player clicks Start
   if (!started) return <IntroScreen onStart={() => setStarted(true)} />;
 
+  // 1 real second = 1 game day tick
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    if (state.gameLost || state.victoryUnlocked) return;
+    const id = setInterval(() => dispatch({ type: 'TICK_TIME' }), 1000);
+    return () => clearInterval(id);
+  }, [state.gameLost, state.victoryUnlocked]);
+
+  // Trigger victory screen once
   if (state.victoryUnlocked && !victoryShown && !showVictory) {
     setShowVictory(true);
     setVictoryShown(true);
+  }
+
+  // Game over — show screen
+  if (state.gameLost) {
+    return (
+      <GameOverScreen
+        state={state}
+        onRestart={() => window.location.reload()}
+      />
+    );
   }
 
   const progress = getLayerProgress(state);
@@ -90,15 +111,15 @@ export default function App() {
       <div style={{
         background: C.CARD,
         borderBottom: `1px solid ${C.BORDER}`,
-        padding: '12px 16px',
+        padding: '10px 16px',
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{
-            width: 36, height: 36, borderRadius: 8,
+            width: 34, height: 34, borderRadius: 8,
             background: C.BLUE_DIM,
             border: `2px solid ${C.BLUE}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 18, flexShrink: 0,
+            fontSize: 16, flexShrink: 0,
           }}>
             {info?.icon}
           </div>
@@ -111,11 +132,8 @@ export default function App() {
             </div>
           </div>
 
-          {/* Compact progress pills — hide on very small screens */}
-          <div className="nav-bar" style={{
-            display: 'flex', gap: 4, flexShrink: 0,
-            maxWidth: 'min(280px, 40vw)',
-          }}>
+          {/* Compact progress pips */}
+          <div className="nav-bar" style={{ display: 'flex', gap: 4, flexShrink: 0, maxWidth: 'min(280px, 40vw)' }}>
             {[1,2,3,4,5,6,7].map(n => {
               const pct = progress[keys[n-1]] || 0;
               const isAct = n === state.activeChapter;
@@ -143,7 +161,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* Main content */}
       <main style={{ maxWidth: 1200, margin: '0 auto', padding: '0 16px 60px' }}>
         {renderChapter()}
       </main>
