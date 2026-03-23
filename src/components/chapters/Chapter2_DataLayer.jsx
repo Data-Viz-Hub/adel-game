@@ -11,7 +11,7 @@ const CATALOG_OWNERS = [
 const LEGAL_BASES = ['Legal Obligation', 'Public Interest', 'Vital Interests', 'Consent', 'Contract'];
 const UPDATE_FREQUENCIES = ['Real-time', 'Daily', 'Weekly', 'Monthly', 'Annually'];
 
-export default function Chapter2_DataLayer({ state, dispatch }) {
+export default function Chapter2_DataLayer({ state, dispatch, locked }) {
   const [phase, setPhase] = useState('align');
   const [aligningField, setAligningField] = useState(null);
   const [shuffledOpts, setShuffledOpts] = useState([]);
@@ -140,13 +140,15 @@ export default function Chapter2_DataLayer({ state, dispatch }) {
                         }}>{v}</span>
                       ))}
                     </div>
-                    <button onClick={() => openAlign(field)} style={{
+                    <button onClick={() => !locked && openAlign(field)} disabled={locked} style={{
                       width: '100%', padding: '8px',
-                      background: C.BLUE_DIM, border: `1px solid ${C.BLUE}`,
-                      color: C.TEXT, borderRadius: 6, cursor: 'pointer',
+                      background: locked ? C.RAISED : C.BLUE_DIM,
+                      border: `1px solid ${locked ? C.BORDER : C.BLUE}`,
+                      color: locked ? C.FAINT : C.TEXT, borderRadius: 6,
+                      cursor: locked ? 'not-allowed' : 'pointer',
                       fontSize: 12, fontWeight: 600,
                     }}>
-                      Align to Standard →
+                      {locked ? '🔒 Locked' : 'Align to Standard →'}
                     </button>
                   </>
                 ) : (
@@ -168,13 +170,15 @@ export default function Chapter2_DataLayer({ state, dispatch }) {
                     {field.catalogMetadata?.legalBasis} · {field.catalogMetadata?.frequency}
                   </div>
                 ) : (
-                  <button onClick={() => setCatalogingField(field)} style={{
+                  <button onClick={() => !locked && setCatalogingField(field)} disabled={locked} style={{
                     width: '100%', padding: '8px',
-                    background: C.RAISED, border: `1px solid ${C.ORANGE}`,
-                    color: C.ORANGE, borderRadius: 6, cursor: 'pointer',
+                    background: locked ? C.RAISED : C.RAISED,
+                    border: `1px solid ${locked ? C.BORDER : C.ORANGE}`,
+                    color: locked ? C.FAINT : C.ORANGE, borderRadius: 6,
+                    cursor: locked ? 'not-allowed' : 'pointer',
                     fontSize: 12, fontWeight: 600,
                   }}>
-                    Register in Catalog →
+                    {locked ? '🔒 Locked' : 'Register in Catalog →'}
                   </button>
                 )
               )}

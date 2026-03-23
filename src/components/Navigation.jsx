@@ -32,13 +32,13 @@ export default function Navigation({ state, dispatch }) {
           return (
             <button
               key={ch.id}
-              onClick={() => unlocked && dispatch({ type: 'SET_CHAPTER', chapter: ch.id })}
+              onClick={() => dispatch({ type: 'SET_CHAPTER', chapter: ch.id })}
               style={{
                 padding: '10px 14px 8px',
                 background: 'none', border: 'none',
                 borderBottom: isActive ? `3px solid ${C.ORANGE}` : '3px solid transparent',
-                color: !unlocked ? C.FAINT : isActive ? C.ORANGE : C.MUTED,
-                cursor: unlocked ? 'pointer' : 'not-allowed',
+                color: isActive ? C.ORANGE : C.MUTED,
+                cursor: 'pointer',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 minWidth: 80,
                 transition: 'color 0.15s',
@@ -46,11 +46,11 @@ export default function Navigation({ state, dispatch }) {
               }}
             >
               <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                <span style={{ fontSize: 14, opacity: unlocked ? 1 : 0.3 }}>{ch.icon}</span>
+                <span style={{ fontSize: 14 }}>{ch.icon}</span>
                 <span style={{ fontSize: 11, fontWeight: isActive ? 700 : 500, whiteSpace: 'nowrap' }}>
                   {ch.name}
                 </span>
-                {!unlocked && <span style={{ fontSize: 9 }}>🔒</span>}
+                {!unlocked && <span style={{ fontSize: 9, opacity: 0.6 }}>⚠</span>}
               </div>
               {/* Progress bar */}
               <div style={{ width: '100%', height: 2, background: C.BORDER, borderRadius: 1 }}>

@@ -1,4 +1,4 @@
-import { useReducer, useState, useEffect, useCallback } from 'react';
+import { useReducer, useState, useEffect } from 'react';
 import { gameReducer, createInitialState, getLayerProgress, isChapterUnlocked, getLockReason } from './gameReducer';
 import { C } from './colors';
 import IntroScreen from './components/IntroScreen';
@@ -26,70 +26,90 @@ const CHAPTER_INFO = [
   { name: 'Legal & Governance',   icon: '⚖️', desc: 'Enact foundational laws to govern digital transformation' },
 ];
 
+// Detailed lock explanations per chapter
+const LOCK_DETAIL = {
+  2: (p) => [
+    p.infrastructure < 30 && `Migrate agencies to the cloud first — at least 9 of 30 agencies must be in Cloud A, Cloud B, or Hybrid zones (Infrastructure is at ${p.infrastructure}%, need 30%).`,
+  ].filter(Boolean),
+  3: (p) => [
+    p.infrastructure < 50 && `Half the agencies must be cloud-migrated before the ADEL network can be wired — Infrastructure is at ${p.infrastructure}%, need 50%.`,
+    p.dataLayer < 20 && `At least 2 data fields must be aligned to EU/ISO standards in the Data Layer before connections can be registered (Data Layer at ${p.dataLayer}%, need 20%).`,
+  ].filter(Boolean),
+  4: (p) => [
+    p.interoperability < 40 && `Deploy connections in the ADEL Network first — at least 6 of 15 connections must be active (Interoperability at ${p.interoperability}%, need 40%).`,
+    p.dataLayer < 30 && `Register more fields in the National Data Catalog — Data Layer must reach 30% (currently ${p.dataLayer}%).`,
+  ].filter(Boolean),
+  5: (p) => [
+    p.appServices < 50 && `Deploy and onboard agencies on shared tools first — e-Identity Gateway and at least 1 more service must reach 50% adoption (App Services at ${p.appServices}%, need 50%).`,
+  ].filter(Boolean),
+  6: (p) => [
+    p.channels < 60 && `Assign the correct channel to at least 10 of 16 government services in the Channels layer (currently ${p.channels}%, need 60%).`,
+    p.interoperability < 50 && `At least 8 ADEL connections must be active to enable automated life event triggers (Interoperability at ${p.interoperability}%, need 50%).`,
+    p.appServices < 40 && `More shared services must be adopted — App Services must reach 40% (currently ${p.appServices}%).`,
+  ].filter(Boolean),
+};
+
+function LockBanner({ chapterId, progress }) {
+  const reasons = LOCK_DETAIL[chapterId]?.(progress) || getLockReason(chapterId, progress);
+  if (!reasons.length) return null;
+  return (
+    <div style={{
+      margin: '16px 0',
+      padding: '14px 16px',
+      background: `${C.ORANGE}0F`,
+      border: `1px solid ${C.ORANGE}55`,
+      borderLeft: `4px solid ${C.ORANGE}`,
+      borderRadius: 8,
+    }}>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+        <span style={{ fontSize: 16 }}>⚠️</span>
+        <span style={{ fontWeight: 700, color: C.ORANGE, fontSize: 13 }}>
+          Prerequisites not yet met — actions in this layer are disabled
+        </span>
+      </div>
+      <ul style={{ margin: 0, paddingLeft: 18 }}>
+        {reasons.map((r, i) => (
+          <li key={i} style={{ color: C.MUTED, fontSize: 12, lineHeight: 1.7 }}>{r}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function App() {
   const [started, setStarted] = useState(false);
   const [state, dispatch] = useReducer(gameReducer, null, createInitialState);
   const [showVictory, setShowVictory] = useState(false);
   const [victoryShown, setVictoryShown] = useState(false);
 
-  // Show intro until player clicks Start
-  if (!started) return <IntroScreen onStart={() => setStarted(true)} />;
-
-  // 1 real second = 1 game day tick
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  // ── Timer: MUST be before any early returns (Rules of Hooks) ──
   useEffect(() => {
-    if (state.gameLost || state.victoryUnlocked) return;
+    if (!started || state.gameLost || state.victoryUnlocked) return;
     const id = setInterval(() => dispatch({ type: 'TICK_TIME' }), 1000);
     return () => clearInterval(id);
-  }, [state.gameLost, state.victoryUnlocked]);
+  }, [started, state.gameLost, state.victoryUnlocked]);
 
-  // Trigger victory screen once
+  // Intro gate
+  if (!started) return <IntroScreen onStart={() => setStarted(true)} />;
+
+  // Victory trigger
   if (state.victoryUnlocked && !victoryShown && !showVictory) {
     setShowVictory(true);
     setVictoryShown(true);
   }
 
-  // Game over — show screen
+  // Game over
   if (state.gameLost) {
-    return (
-      <GameOverScreen
-        state={state}
-        onRestart={() => window.location.reload()}
-      />
-    );
+    return <GameOverScreen state={state} onRestart={() => window.location.reload()} />;
   }
 
   const progress = getLayerProgress(state);
   const locked = !isChapterUnlocked(state.activeChapter, progress);
-  const lockReasons = getLockReason(state.activeChapter, progress);
   const info = CHAPTER_INFO[state.activeChapter];
   const keys = ['infrastructure','dataLayer','interoperability','appServices','channels','lifeEvents','legal'];
 
   function renderChapter() {
-    if (locked) {
-      return (
-        <div style={{ textAlign: 'center', padding: '60px 16px' }}>
-          <div style={{ fontSize: 44, marginBottom: 16 }}>🔒</div>
-          <h3 style={{ fontSize: 18, color: C.TEXT, marginBottom: 8 }}>Chapter Locked</h3>
-          <p style={{ fontSize: 13, color: C.MUTED, maxWidth: 360, margin: '0 auto 16px', lineHeight: 1.6 }}>
-            Complete the following to unlock:
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
-            {lockReasons.map((r, i) => (
-              <div key={i} style={{
-                padding: '7px 14px',
-                background: C.CARD, border: `1px solid ${C.BORDER}`,
-                borderRadius: 20, fontSize: 13, color: C.MUTED,
-              }}>
-                • {r}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    const props = { state, dispatch };
+    const props = { state, dispatch, locked };
     switch (state.activeChapter) {
       case 1: return <Chapter1_Infrastructure {...props} />;
       case 2: return <Chapter2_DataLayer {...props} />;
@@ -108,16 +128,11 @@ export default function App() {
       <Navigation state={state} dispatch={dispatch} />
 
       {/* Chapter header */}
-      <div style={{
-        background: C.CARD,
-        borderBottom: `1px solid ${C.BORDER}`,
-        padding: '10px 16px',
-      }}>
+      <div style={{ background: C.CARD, borderBottom: `1px solid ${C.BORDER}`, padding: '10px 16px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{
             width: 34, height: 34, borderRadius: 8,
-            background: C.BLUE_DIM,
-            border: `2px solid ${C.BLUE}`,
+            background: C.BLUE_DIM, border: `2px solid ${C.BLUE}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 16, flexShrink: 0,
           }}>
@@ -126,31 +141,28 @@ export default function App() {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: C.ORANGE }}>
               Layer {state.activeChapter} — {info?.name}
+              {locked && <span style={{ marginLeft: 8, fontSize: 11, color: C.MUTED, fontWeight: 400 }}>🔒 locked</span>}
             </div>
             <div style={{ fontSize: 11, color: C.MUTED, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {info?.desc}
             </div>
           </div>
 
-          {/* Compact progress pips */}
+          {/* Progress pips */}
           <div className="nav-bar" style={{ display: 'flex', gap: 4, flexShrink: 0, maxWidth: 'min(280px, 40vw)' }}>
             {[1,2,3,4,5,6,7].map(n => {
               const pct = progress[keys[n-1]] || 0;
               const isAct = n === state.activeChapter;
               return (
-                <div
-                  key={n}
-                  onClick={() => dispatch({ type: 'SET_CHAPTER', chapter: n })}
+                <div key={n} onClick={() => dispatch({ type: 'SET_CHAPTER', chapter: n })}
                   title={`Layer ${n}: ${pct}%`}
                   style={{
-                    flexShrink: 0,
-                    width: 26, height: 26, borderRadius: 6,
+                    flexShrink: 0, width: 26, height: 26, borderRadius: 6,
                     background: `linear-gradient(to top, ${C.BLUE} ${pct}%, ${C.RAISED} ${pct}%)`,
                     border: `2px solid ${isAct ? C.ORANGE : C.BORDER}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 8, color: isAct ? C.ORANGE : C.MUTED,
-                    fontWeight: 700, cursor: 'pointer',
-                    transition: 'border-color 0.2s',
+                    fontWeight: 700, cursor: 'pointer', transition: 'border-color 0.2s',
                   }}
                 >
                   {n}
@@ -162,14 +174,13 @@ export default function App() {
       </div>
 
       <main style={{ maxWidth: 1200, margin: '0 auto', padding: '0 16px 60px' }}>
+        {/* Prerequisite banner — shown inline, chapter is still visible */}
+        {locked && <LockBanner chapterId={state.activeChapter} progress={progress} />}
         {renderChapter()}
       </main>
 
       <NotificationBar notifications={state.notifications} dispatch={dispatch} />
-
-      {showVictory && (
-        <VictoryScreen state={state} onClose={() => setShowVictory(false)} />
-      )}
+      {showVictory && <VictoryScreen state={state} onClose={() => setShowVictory(false)} />}
     </div>
   );
 }

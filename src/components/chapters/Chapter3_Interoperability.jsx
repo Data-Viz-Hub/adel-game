@@ -14,7 +14,7 @@ const STEPS = [
   { title: 'Register Legal Agreement & Catalog', desc: 'Connection metadata must be registered in the Data Catalog. Legal agreement governs data exchange.', action: 'Register & Activate Connection' },
 ];
 
-export default function Chapter3_Interoperability({ state, dispatch }) {
+export default function Chapter3_Interoperability({ state, dispatch, locked }) {
   const [selectedNode, setSelectedNode] = useState(null);
   const [hoveredNode, setHoveredNode] = useState(null);
 
@@ -28,6 +28,7 @@ export default function Chapter3_Interoperability({ state, dispatch }) {
   }
 
   function handleNodeClick(nodeId) {
+    if (locked) return;
     if (!selectedNode) { setSelectedNode(nodeId); return; }
     if (selectedNode === nodeId) { setSelectedNode(null); return; }
     if (!isUseful(selectedNode, nodeId)) { setSelectedNode(null); return; }
@@ -174,7 +175,7 @@ export default function Chapter3_Interoperability({ state, dispatch }) {
                 onClick={() => !isHub && handleNodeClick(node.id)}
                 onMouseEnter={() => setHoveredNode(node.id)}
                 onMouseLeave={() => setHoveredNode(null)}
-                style={{ cursor: isHub ? 'default' : 'pointer' }}
+                style={{ cursor: isHub || locked ? 'default' : 'pointer' }}
               >
                 {isHub && <circle cx={node.x} cy={node.y} r={38} fill="url(#hubGlow)" />}
                 <circle

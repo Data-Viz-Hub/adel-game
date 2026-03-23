@@ -2,7 +2,7 @@ import ProgressBar from '../shared/ProgressBar';
 import { getLayerProgress, calcLegalProgress } from '../../gameReducer';
 import { C } from '../../colors';
 
-export default function Chapter7_Legal({ state, dispatch }) {
+export default function Chapter7_Legal({ state, dispatch, locked }) {
   const progress = calcLegalProgress(state);
   const layerProgress = getLayerProgress(state);
   const allEffective = state.laws.every(l => l.enacted && l.bonusApplied);

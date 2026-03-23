@@ -2,7 +2,7 @@ import ProgressBar from '../shared/ProgressBar';
 import { calcAppServicesProgress, calcInteropProgress } from '../../gameReducer';
 import { C } from '../../colors';
 
-export default function Chapter4_AppServices({ state, dispatch }) {
+export default function Chapter4_AppServices({ state, dispatch, locked }) {
   const progress = calcAppServicesProgress(state);
   const interopPct = calcInteropProgress(state);
   const digitalIdLaw = state.laws.find(l => l.id === 'law02');
@@ -105,7 +105,7 @@ export default function Chapter4_AppServices({ state, dispatch }) {
                         <div style={{ fontSize: 10, color: C.BLUE, marginTop: 4 }}>⚡ {m}× speed</div>
                       )}
                       {canAdopt ? (
-                        <button onClick={() => dispatch({ type: 'ONBOARD_AGENCY', toolId: tool.id })} style={{
+                        <button onClick={() => !locked && dispatch({ type: 'ONBOARD_AGENCY', toolId: tool.id })} disabled={locked} style={{
                           marginTop: 10, width: '100%', padding: '8px',
                           background: C.RAISED, border: `1px solid ${C.ORANGE}`,
                           color: C.ORANGE, borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 600,
@@ -124,7 +124,7 @@ export default function Chapter4_AppServices({ state, dispatch }) {
                         fontSize: 10, color: C.ORANGE, marginBottom: 8,
                         padding: '5px 8px', background: `${C.ORANGE}11`, borderRadius: 5,
                       }}>⚠ {reason}</div>}
-                      <button onClick={() => ok && dispatch({ type: 'DEPLOY_TOOL', toolId: tool.id })} disabled={!ok}
+                      <button onClick={() => ok && !locked && dispatch({ type: 'DEPLOY_TOOL', toolId: tool.id })} disabled={!ok || locked}
                         style={{
                           width: '100%', padding: '9px',
                           background: ok ? C.BLUE_DIM : C.RAISED,

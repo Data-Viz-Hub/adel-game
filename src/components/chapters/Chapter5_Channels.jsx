@@ -11,7 +11,7 @@ const CHANNELS = [
   { id: 'physical', label: '🏛 Physical', desc: 'In-person' },
 ];
 
-export default function Chapter5_Channels({ state, dispatch }) {
+export default function Chapter5_Channels({ state, dispatch, locked }) {
   const [hintId, setHintId] = useState(null);
   const progress = calcChannelsProgress(state);
 
@@ -107,7 +107,7 @@ export default function Chapter5_Channels({ state, dispatch }) {
                     return (
                       <button
                         key={ch.id}
-                        onClick={() => !lockReason && !isCorrect && dispatch({ type: 'ASSIGN_CHANNEL', serviceId: svc.id, channel: ch.id })}
+                        onClick={() => !lockReason && !isCorrect && !locked && dispatch({ type: 'ASSIGN_CHANNEL', serviceId: svc.id, channel: ch.id })}
                         title={lockReason || ch.desc}
                         style={{
                           padding: '5px 10px',

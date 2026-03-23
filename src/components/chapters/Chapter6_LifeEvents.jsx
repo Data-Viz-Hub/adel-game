@@ -4,7 +4,7 @@ import { GOVERNMENT_SERVICES } from '../../gameData';
 import { calcLifeEventsProgress } from '../../gameReducer';
 import { C } from '../../colors';
 
-export default function Chapter6_LifeEvents({ state, dispatch }) {
+export default function Chapter6_LifeEvents({ state, dispatch, locked }) {
   const [selected, setSelected] = useState(null);
   const [animating, setAnimating] = useState(null);
   const progress = calcLifeEventsProgress(state);
@@ -138,8 +138,8 @@ export default function Chapter6_LifeEvents({ state, dispatch }) {
 
                   {!event.optimized ? (
                     <button
-                      onClick={() => canOptimize && handleOptimize(event)}
-                      disabled={!canOptimize || isAnim}
+                      onClick={() => canOptimize && !locked && handleOptimize(event)}
+                      disabled={!canOptimize || isAnim || locked}
                       style={{
                         width: '100%', padding: '11px',
                         background: canOptimize ? C.BLUE_DIM : C.RAISED,
