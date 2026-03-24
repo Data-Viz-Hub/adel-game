@@ -134,27 +134,38 @@ export const DATA_FIELDS = [
   },
 ];
 
+// Circle layout: center (350, 240), radius 175, 11 nodes, starting at top (-90°)
 export const ADEL_NODES = [
-  { id: 'n01', name: 'Ministry of Finance', x: 150, y: 100, agencyId: 'a01' },
-  { id: 'n02', name: 'Ministry of Justice', x: 350, y: 80, agencyId: 'a02' },
-  { id: 'n03', name: 'Ministry of Health', x: 550, y: 100, agencyId: 'a03' },
-  { id: 'n04', name: 'State Revenue Committee', x: 700, y: 200, agencyId: 'a16' },
-  { id: 'n05', name: 'Social Insurance Fund', x: 650, y: 350, agencyId: 'a20' },
-  { id: 'n06', name: 'State Employment Agency', x: 500, y: 430, agencyId: 'a19' },
-  { id: 'n07', name: 'Ministry of Labor', x: 300, y: 430, agencyId: 'a05' },
-  { id: 'n08', name: 'Cadastre Committee', x: 150, y: 350, agencyId: 'a17' },
-  { id: 'n09', name: 'Ministry of Interior', x: 100, y: 220, agencyId: 'a12' },
-  { id: 'n10', name: 'National Statistics Service', x: 250, y: 260, agencyId: 'a23' },
-  { id: 'n11', name: 'E-Gov Infrastructure Center', x: 450, y: 260, agencyId: 'a42' },
-  { id: 'hub', name: 'ADEL Hub', x: 350, y: 260, agencyId: null, isHub: true },
+  { id: 'n01', name: 'Ministry of Finance',      x: 350, y: 65,  agencyId: 'a01' },
+  { id: 'n02', name: 'Ministry of Justice',      x: 443, y: 93,  agencyId: 'a02' },
+  { id: 'n03', name: 'Ministry of Health',       x: 507, y: 167, agencyId: 'a03' },
+  { id: 'n04', name: 'State Revenue Committee',  x: 520, y: 262, agencyId: 'a16' },
+  { id: 'n05', name: 'Social Insurance Fund',    x: 478, y: 352, agencyId: 'a20' },
+  { id: 'n06', name: 'State Employment Agency',  x: 396, y: 405, agencyId: 'a19' },
+  { id: 'n07', name: 'Ministry of Labor',        x: 304, y: 405, agencyId: 'a05' },
+  { id: 'n08', name: 'Cadastre Committee',       x: 222, y: 352, agencyId: 'a17' },
+  { id: 'n09', name: 'Ministry of Interior',     x: 180, y: 262, agencyId: 'a12' },
+  { id: 'n10', name: 'National Statistics Svc',  x: 193, y: 167, agencyId: 'a23' },
+  { id: 'n11', name: 'E-Gov Infra Center',       x: 257, y: 93,  agencyId: 'a42' },
 ];
 
+// Direct peer-to-peer connections — no central hub (decentralized ADEL architecture)
 export const USEFUL_CONNECTIONS = [
-  ['n01', 'hub'], ['n02', 'hub'], ['n03', 'hub'], ['n04', 'hub'],
-  ['n05', 'hub'], ['n06', 'hub'], ['n07', 'hub'], ['n08', 'hub'],
-  ['n09', 'hub'], ['n10', 'hub'], ['n11', 'hub'],
-  ['n01', 'n04'], ['n03', 'n05'], ['n06', 'n07'],
-  ['n02', 'n08'],
+  ['n01', 'n04'],  // Finance ↔ Revenue: fiscal oversight
+  ['n01', 'n05'],  // Finance ↔ Social Insurance: payroll & pensions
+  ['n02', 'n09'],  // Justice ↔ Interior: civil registry & ID
+  ['n02', 'n08'],  // Justice ↔ Cadastre: property & land titles
+  ['n03', 'n05'],  // Health ↔ Social Insurance: medical benefits
+  ['n03', 'n10'],  // Health ↔ Statistics: public health data
+  ['n04', 'n05'],  // Revenue ↔ Social Insurance: contributions
+  ['n04', 'n10'],  // Revenue ↔ Statistics: tax analytics
+  ['n05', 'n06'],  // Social Insurance ↔ Employment: unemployment
+  ['n05', 'n07'],  // Social Insurance ↔ Labor: labor records
+  ['n06', 'n07'],  // Employment ↔ Labor: job market data
+  ['n08', 'n09'],  // Cadastre ↔ Interior: address registry
+  ['n09', 'n10'],  // Interior ↔ Statistics: population data
+  ['n11', 'n01'],  // E-Gov ↔ Finance: infrastructure billing
+  ['n11', 'n04'],  // E-Gov ↔ Revenue: digital service platform
 ];
 
 export const SERVICE_TOOLS = [
@@ -201,7 +212,7 @@ export const LIFE_EVENTS = [
     currentDays: 45,
     targetDays: 0,
     description: 'Birth registration, parental leave, child benefit, health card',
-    requiredConnections: [['n02', 'hub'], ['n03', 'hub'], ['n07', 'hub'], ['n05', 'hub']],
+    requiredConnections: [['n02', 'n09'], ['n03', 'n05'], ['n05', 'n07']],
     requiredFields: ['df01', 'df02', 'df10'],
     requiredTools: ['st01', 'st04'],
     requiredChannel: 'gs01',
@@ -217,7 +228,7 @@ export const LIFE_EVENTS = [
     currentDays: 20,
     targetDays: 1,
     description: 'Marriage registration, tax status update, benefit recalculation',
-    requiredConnections: [['n02', 'hub'], ['n07', 'hub'], ['n04', 'hub']],
+    requiredConnections: [['n02', 'n09'], ['n04', 'n05']],
     requiredFields: ['df01', 'df02'],
     requiredTools: ['st01'],
     requiredChannel: 'gs12',
@@ -233,7 +244,7 @@ export const LIFE_EVENTS = [
     currentDays: 30,
     targetDays: 1,
     description: 'Entity registration, tax registration, bank account, permits',
-    requiredConnections: [['n02', 'hub'], ['n04', 'hub'], ['n11', 'hub']],
+    requiredConnections: [['n02', 'n08'], ['n01', 'n04'], ['n11', 'n04']],
     requiredFields: ['df04', 'df08'],
     requiredTools: ['st01', 'st05', 'st06'],
     requiredChannel: 'gs08',
@@ -249,7 +260,7 @@ export const LIFE_EVENTS = [
     currentDays: 21,
     targetDays: 0,
     description: 'Unemployment benefit registration, job seeker status, tax update',
-    requiredConnections: [['n06', 'hub'], ['n07', 'hub'], ['n05', 'hub']],
+    requiredConnections: [['n06', 'n07'], ['n05', 'n06'], ['n04', 'n05']],
     requiredFields: ['df01', 'df05'],
     requiredTools: ['st01', 'st04'],
     requiredChannel: 'gs10',
@@ -265,7 +276,7 @@ export const LIFE_EVENTS = [
     currentDays: 14,
     targetDays: 1,
     description: 'Address update across all registries',
-    requiredConnections: [['n02', 'hub'], ['n09', 'hub'], ['n04', 'hub']],
+    requiredConnections: [['n02', 'n09'], ['n08', 'n09'], ['n01', 'n04']],
     requiredFields: ['df01', 'df03'],
     requiredTools: ['st01'],
     requiredChannel: 'gs03',
@@ -281,7 +292,7 @@ export const LIFE_EVENTS = [
     currentDays: 60,
     targetDays: 0,
     description: 'Pension enrollment, benefit calculation, tax status change',
-    requiredConnections: [['n05', 'hub'], ['n04', 'hub'], ['n07', 'hub']],
+    requiredConnections: [['n04', 'n05'], ['n05', 'n07'], ['n01', 'n04']],
     requiredFields: ['df01', 'df05', 'df04'],
     requiredTools: ['st01', 'st04'],
     requiredChannel: 'gs13',
@@ -297,7 +308,7 @@ export const LIFE_EVENTS = [
     currentDays: 90,
     targetDays: 7,
     description: 'Death certificate, estate transfer, benefit termination, property transfer',
-    requiredConnections: [['n03', 'hub'], ['n02', 'hub'], ['n08', 'hub'], ['n04', 'hub']],
+    requiredConnections: [['n03', 'n05'], ['n02', 'n08'], ['n08', 'n09'], ['n01', 'n04']],
     requiredFields: ['df01', 'df02', 'df03'],
     requiredTools: ['st01', 'st06'],
     requiredChannel: 'gs07',
@@ -313,7 +324,7 @@ export const LIFE_EVENTS = [
     currentDays: 120,
     targetDays: 14,
     description: 'Property check, environmental clearance, permit issuance, fee payment',
-    requiredConnections: [['n08', 'hub'], ['n04', 'hub'], ['n11', 'hub']],
+    requiredConnections: [['n02', 'n08'], ['n01', 'n04'], ['n11', 'n04']],
     requiredFields: ['df03', 'df08'],
     requiredTools: ['st05', 'st06'],
     requiredChannel: 'gs14',

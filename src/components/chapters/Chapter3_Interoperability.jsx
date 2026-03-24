@@ -65,7 +65,7 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
     <div style={{ padding: '20px 0' }}>
       <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 3 — ADEL Network</h2>
       <p style={{ color: C.MUTED, marginBottom: 16, fontSize: 13, lineHeight: 1.6 }}>
-        Connect agencies via the ADEL data exchange hub. Each connection requires 3 steps: Security Server → mTLS Certificate → Legal Agreement.
+        Connect agencies via direct peer-to-peer ADEL links — no central hub. Each connection requires 3 steps: Security Server → mTLS Certificate → Legal Agreement.
       </p>
 
       <div style={{ marginBottom: 16, display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -119,13 +119,6 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
         borderRadius: 10, padding: 8,
       }}>
         <svg width={SVG_W} height={SVG_H} style={{ display: 'block' }}>
-          <defs>
-            <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor={C.ORANGE} stopOpacity="0.25" />
-              <stop offset="100%" stopColor={C.ORANGE} stopOpacity="0" />
-            </radialGradient>
-          </defs>
-
           {/* Grid lines */}
           {Array.from({ length: 10 }).map((_, i) => (
             <line key={`h${i}`} x1={0} y1={i * 48} x2={SVG_W} y2={i * 48} stroke={C.RAISED} strokeWidth={1} />
@@ -133,6 +126,11 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
           {Array.from({ length: 15 }).map((_, i) => (
             <line key={`v${i}`} x1={i * 52} y1={0} x2={i * 52} y2={SVG_H} stroke={C.RAISED} strokeWidth={1} />
           ))}
+
+          {/* Subtle center label */}
+          <text x={350} y={244} textAnchor="middle" fill={C.FAINT} fontSize={11} fontWeight={700} opacity={0.5}>
+            ADEL Protocol
+          </text>
 
           {/* Connections */}
           {USEFUL_CONNECTIONS.map(([a, b]) => {
@@ -162,45 +160,37 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
 
           {/* Nodes */}
           {ADEL_NODES.map(node => {
-            const isHub = node.isHub;
             const isSel = selectedNode === node.id;
             const isHov = hoveredNode === node.id;
             const agency = node.agencyId ? state.agencies.find(a => a.id === node.agencyId) : null;
             const inCloud = agency ? (agency.zone && agency.zone !== 'legacy') : true;
-            const r = isHub ? 20 : 13;
-            const borderColor = isHub ? C.ORANGE : isSel ? C.ORANGE : inCloud ? C.BLUE : '#E53E3E';
+            const borderColor = isSel ? C.ORANGE : inCloud ? C.BLUE : '#E53E3E';
 
             return (
               <g key={node.id}
-                onClick={() => !isHub && handleNodeClick(node.id)}
+                onClick={() => handleNodeClick(node.id)}
                 onMouseEnter={() => setHoveredNode(node.id)}
                 onMouseLeave={() => setHoveredNode(null)}
-                style={{ cursor: isHub || locked ? 'default' : 'pointer' }}
+                style={{ cursor: locked ? 'default' : 'pointer' }}
               >
-                {isHub && <circle cx={node.x} cy={node.y} r={38} fill="url(#hubGlow)" />}
                 <circle
-                  cx={node.x} cy={node.y} r={r}
+                  cx={node.x} cy={node.y} r={13}
                   fill={C.CARD}
                   stroke={borderColor}
-                  strokeWidth={isSel || isHub ? 2.5 : 1.5}
+                  strokeWidth={isSel ? 2.5 : 1.5}
                 />
-                {isHub ? (
-                  <text x={node.x} y={node.y + 4} textAnchor="middle"
-                    fill={C.ORANGE} fontSize={9} fontWeight={700}>ADEL</text>
-                ) : (
-                  <text x={node.x} y={node.y + 4} textAnchor="middle"
-                    fill={borderColor} fontSize={9} fontWeight={700}>
-                    {node.id.replace('n', '')}
-                  </text>
-                )}
+                <text x={node.x} y={node.y + 4} textAnchor="middle"
+                  fill={borderColor} fontSize={9} fontWeight={700}>
+                  {node.id.replace('n', '')}
+                </text>
                 {(isHov || isSel) && (
-                  <text x={node.x} y={node.y - r - 5} textAnchor="middle"
+                  <text x={node.x} y={node.y - 18} textAnchor="middle"
                     fill={C.TEXT} fontSize={9} style={{ pointerEvents: 'none' }}>
                     {node.name}
                   </text>
                 )}
                 {agency && !inCloud && (
-                  <text x={node.x + r - 3} y={node.y - r + 4} fill="#E53E3E" fontSize={9}>!</text>
+                  <text x={node.x + 10} y={node.y - 9} fill="#E53E3E" fontSize={9}>!</text>
                 )}
               </g>
             );
@@ -209,9 +199,9 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
       </div>
 
       <div style={{ display: 'flex', gap: 16, marginTop: 10, fontSize: 11, color: C.MUTED, flexWrap: 'wrap' }}>
-        <span><span style={{ color: C.ORANGE }}>●</span> ADEL Hub</span>
         <span><span style={{ color: C.BLUE }}>●</span> Cloud agency</span>
         <span><span style={{ color: '#E53E3E' }}>●</span> Not migrated</span>
+        <span><span style={{ color: C.ORANGE }}>●</span> Selected</span>
         <span style={{ marginLeft: 'auto' }}>Tap two nodes to connect</span>
       </div>
 

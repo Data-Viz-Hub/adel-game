@@ -7,6 +7,7 @@ import Navigation from './components/Navigation';
 import NotificationBar from './components/NotificationBar';
 import VictoryScreen from './components/VictoryScreen';
 import GameOverScreen from './components/GameOverScreen';
+import TransformationView from './components/TransformationView';
 import Chapter1_Infrastructure from './components/chapters/Chapter1_Infrastructure';
 import Chapter2_DataLayer from './components/chapters/Chapter2_DataLayer';
 import Chapter3_Interoperability from './components/chapters/Chapter3_Interoperability';
@@ -81,6 +82,7 @@ export default function App() {
   const [state, dispatch] = useReducer(gameReducer, null, createInitialState);
   const [showVictory, setShowVictory] = useState(false);
   const [victoryShown, setVictoryShown] = useState(false);
+  const [showTransformation, setShowTransformation] = useState(false);
 
   // ── Timer: MUST be before any early returns (Rules of Hooks) ──
   useEffect(() => {
@@ -181,6 +183,23 @@ export default function App() {
 
       <NotificationBar notifications={state.notifications} dispatch={dispatch} />
       {showVictory && <VictoryScreen state={state} onClose={() => setShowVictory(false)} />}
+      {showTransformation && <TransformationView state={state} onClose={() => setShowTransformation(false)} />}
+
+      {/* Floating transformation button */}
+      <button
+        onClick={() => setShowTransformation(true)}
+        style={{
+          position: 'fixed', bottom: 20, left: 20, zIndex: 900,
+          padding: '10px 16px',
+          background: C.CARD, border: `2px solid ${C.ORANGE}`,
+          color: C.ORANGE, borderRadius: 10,
+          cursor: 'pointer', fontSize: 12, fontWeight: 700,
+          boxShadow: `0 4px 20px ${C.ORANGE}44`,
+          transition: 'all 0.2s',
+        }}
+      >
+        🔄 Transformation
+      </button>
     </div>
   );
 }
