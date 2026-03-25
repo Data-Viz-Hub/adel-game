@@ -117,8 +117,13 @@ export default function App() {
   }
 
   function handleStart() {
-    clearGame();           // wipe any old save so a fresh state is used
-    window.location.reload(); // reload so initState() picks up a clean slate
+    if (hasSave) {
+      // There's a saved game — clear it then reload so initState() gives a clean slate
+      clearGame();
+      window.location.reload();
+    } else {
+      setStarted(true);
+    }
   }
 
   // Intro gate
