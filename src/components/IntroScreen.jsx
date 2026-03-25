@@ -11,7 +11,7 @@ const LAYERS = [
   { n: 7, icon: '⚖️', name: 'Legal',              desc: 'Enact laws to govern the transformation' },
 ];
 
-export default function IntroScreen({ onStart }) {
+export default function IntroScreen({ onStart, onContinue, hasSave }) {
   const [slide, setSlide] = useState(0); // 0=title, 1=mission, 2=layers, 3=rules
 
   const nextSlide = () => setSlide(s => Math.min(s + 1, 3));
@@ -90,6 +90,47 @@ export default function IntroScreen({ onStart }) {
                 </div>
               ))}
             </div>
+
+            {/* Saved game prompt */}
+            {hasSave && (
+              <div style={{
+                marginTop: 28,
+                padding: '16px 20px',
+                background: `${C.BLUE_DIM}22`,
+                border: `1px solid ${C.BLUE}55`,
+                borderRadius: 10,
+                textAlign: 'center',
+              }}>
+                <div style={{ fontSize: 12, color: C.MUTED, marginBottom: 12 }}>
+                  💾 Saved game found
+                </div>
+                <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={onContinue}
+                    style={{
+                      padding: '12px 28px',
+                      background: C.ORANGE, border: 'none', color: '#000',
+                      borderRadius: 8, cursor: 'pointer',
+                      fontSize: 14, fontWeight: 900,
+                      boxShadow: `0 4px 16px ${C.ORANGE}44`,
+                    }}
+                  >
+                    ▶ Continue
+                  </button>
+                  <button
+                    onClick={onStart}
+                    style={{
+                      padding: '12px 20px',
+                      background: 'none', border: `1px solid ${C.BORDER}`,
+                      color: C.MUTED, borderRadius: 8,
+                      cursor: 'pointer', fontSize: 13,
+                    }}
+                  >
+                    New Game
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -227,8 +268,21 @@ export default function IntroScreen({ onStart }) {
               onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = `0 8px 32px ${C.ORANGE}77`; }}
               onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = `0 4px 24px ${C.ORANGE}55`; }}
             >
-              🚀 Begin Digital Transformation
+              🚀 {hasSave ? 'Start New Game' : 'Begin Digital Transformation'}
             </button>
+            {hasSave && (
+              <button
+                onClick={onContinue}
+                style={{
+                  width: '100%', marginTop: 10, padding: '12px',
+                  background: 'none', border: `1px solid ${C.BLUE}`,
+                  color: C.BLUE, borderRadius: 10,
+                  cursor: 'pointer', fontSize: 14, fontWeight: 700,
+                }}
+              >
+                ▶ Continue Saved Game
+              </button>
+            )}
           </div>
         )}
 

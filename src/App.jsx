@@ -1,5 +1,6 @@
 import { useReducer, useState, useEffect } from 'react';
 import { gameReducer, createInitialState, getLayerProgress, isChapterUnlocked, getLockReason } from './gameReducer';
+import { saveGame, loadGame, clearGame, hasSavedGame } from './storage';
 import { C } from './colors';
 import IntroScreen from './components/IntroScreen';
 import TopBar from './components/TopBar';
@@ -77,12 +78,27 @@ function LockBanner({ chapterId, progress }) {
   );
 }
 
+function initState() {
+  const saved = loadGame();
+  const fresh = createInitialState();
+  if (!saved) return fresh;
+  // Overlay saved values onto fresh state so any new keys get defaults
+  return { ...fresh, ...saved };
+}
+
 export default function App() {
   const [started, setStarted] = useState(false);
-  const [state, dispatch] = useReducer(gameReducer, null, createInitialState);
+  const [state, dispatch] = useReducer(gameReducer, null, initState);
   const [showVictory, setShowVictory] = useState(false);
   const [victoryShown, setVictoryShown] = useState(false);
   const [showTransformation, setShowTransformation] = useState(false);
+  // Detect an existing save once on mount
+  const [hasSave] = useState(() => hasSavedGame());
+
+  // ── Auto-save: persist state whenever it changes (after game starts) ──
+  useEffect(() => {
+    if (started) saveGame(state);
+  }, [state, started]);
 
   // ── Timer: MUST be before any early returns (Rules of Hooks) ──
   useEffect(() => {
@@ -91,8 +107,28 @@ export default function App() {
     return () => clearInterval(id);
   }, [started, state.gameLost, state.victoryUnlocked]);
 
+  function handleNewGame() {
+    clearGame();
+    window.location.reload();
+  }
+
+  function handleContinue() {
+    setStarted(true);
+  }
+
+  function handleStart() {
+    clearGame();           // wipe any old save so a fresh state is used
+    window.location.reload(); // reload so initState() picks up a clean slate
+  }
+
   // Intro gate
-  if (!started) return <IntroScreen onStart={() => setStarted(true)} />;
+  if (!started) return (
+    <IntroScreen
+      hasSave={hasSave}
+      onContinue={handleContinue}
+      onStart={handleStart}
+    />
+  );
 
   // Victory trigger
   if (state.victoryUnlocked && !victoryShown && !showVictory) {
@@ -102,7 +138,7 @@ export default function App() {
 
   // Game over
   if (state.gameLost) {
-    return <GameOverScreen state={state} onRestart={() => window.location.reload()} />;
+    return <GameOverScreen state={state} onRestart={handleNewGame} />;
   }
 
   const progress = getLayerProgress(state);
@@ -185,21 +221,32 @@ export default function App() {
       {showVictory && <VictoryScreen state={state} onClose={() => setShowVictory(false)} />}
       {showTransformation && <TransformationView state={state} onClose={() => setShowTransformation(false)} />}
 
-      {/* Floating transformation button */}
-      <button
-        onClick={() => setShowTransformation(true)}
-        style={{
-          position: 'fixed', bottom: 20, left: 20, zIndex: 900,
-          padding: '10px 16px',
-          background: C.CARD, border: `2px solid ${C.ORANGE}`,
-          color: C.ORANGE, borderRadius: 10,
-          cursor: 'pointer', fontSize: 12, fontWeight: 700,
-          boxShadow: `0 4px 20px ${C.ORANGE}44`,
-          transition: 'all 0.2s',
-        }}
-      >
-        🔄 Transformation
-      </button>
+      {/* Floating buttons — bottom-left stack */}
+      <div style={{ position: 'fixed', bottom: 20, left: 20, zIndex: 900, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <button
+          onClick={() => setShowTransformation(true)}
+          style={{
+            padding: '10px 16px',
+            background: C.CARD, border: `2px solid ${C.ORANGE}`,
+            color: C.ORANGE, borderRadius: 10,
+            cursor: 'pointer', fontSize: 12, fontWeight: 700,
+            boxShadow: `0 4px 20px ${C.ORANGE}44`,
+          }}
+        >
+          🔄 Transformation
+        </button>
+        <button
+          onClick={() => { if (window.confirm('Start a new game? Current progress will be lost.')) handleNewGame(); }}
+          style={{
+            padding: '8px 16px',
+            background: C.CARD, border: `1px solid ${C.BORDER}`,
+            color: C.MUTED, borderRadius: 10,
+            cursor: 'pointer', fontSize: 11,
+          }}
+        >
+          ↺ New Game
+        </button>
+      </div>
     </div>
   );
 }
