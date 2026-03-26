@@ -1,5 +1,5 @@
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -12,8 +12,8 @@
 
 body {
   margin: 0;
-  background: #05101F;
-  color: #E8EEF8;
+  background: #F0F4F9;
+  color: #1A1A1A;
   font-family: 'DM Sans', system-ui, sans-serif;
 }
 
@@ -23,9 +23,9 @@ body {
 
 /* ── Scrollbar ─────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: #05101F; }
-::-webkit-scrollbar-thumb { background: #1C3A6B; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #2D4A7A; }
+::-webkit-scrollbar-track { background: #DDE5EE; }
+::-webkit-scrollbar-thumb { background: #8099B8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #5A7AA2; }
 
 /* ── Resets ─────────────────────────────────────── */
 button { font-family: inherit; }

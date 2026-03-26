@@ -1,26 +1,34 @@
-// hartak.am / Armenia e-government color palette
-// Primary: navy blue #0033A0, Accent: orange #F2A800
+// Light theme — government portal palette
+// primary: #355C8C (deep blue), secondary: #56B7B2 (teal), accent: #FF6A38 (orange)
 
 export const C = {
   // Backgrounds
-  BG:       '#05101F',   // page background (deep navy)
-  CARD:     '#0A1C38',   // card / panel
-  RAISED:   '#0F2550',   // elevated / hover state
-  BORDER:   '#1C3A6B',   // borders
+  BG:       '#F0F4F9',   // page background (blue100)
+  CARD:     '#FFFFFF',   // card / panel (white)
+  RAISED:   '#DDE5EE',   // elevated surface / hover (blue200)
+  BORDER:   '#CBD6E3',   // borders (blue300)
+  SVG_BG:   '#EEF3F9',   // SVG canvas background
 
   // Brand colors
-  BLUE:     '#1A6BF0',   // primary blue (brighter for legibility on dark)
-  BLUE_DIM: '#0033A0',   // deep blue (hartak.am exact)
-  ORANGE:   '#F2A800',   // accent orange (hartak.am exact)
-  ORANGE_DIM:'#C48A00',  // dimmer orange
+  BLUE:     '#355C8C',   // primary blue (blue800 / primary)
+  BLUE_DIM: '#5A7AA2',   // secondary blue (blue700)
+  ORANGE:   '#FF6A38',   // accent orange (orangeMain)
+  ORANGE_DIM:'#FFA688',  // dimmer orange (orangeHigh)
 
   // Text
-  TEXT:     '#E8EEF8',   // primary text
-  MUTED:    '#6B8CB5',   // secondary text
-  FAINT:    '#2D4A7A',   // very faint (disabled)
+  TEXT:     '#1A1A1A',   // primary text (text800)
+  MUTED:    '#454545',   // secondary text (text700)
+  FAINT:    '#8099B8',   // placeholder / disabled (blue600)
 
-  // Semantic (kept minimal — reuse blue/orange)
-  SUCCESS:  '#1A6BF0',   // blue = confirmed/active
-  WARNING:  '#F2A800',   // orange = caution
-  ERROR:    '#E53E3E',   // kept for destructive only
+  // Semantic
+  SUCCESS:     '#358000',   // systemSuccess
+  SUCCESS_BG:  '#EEFFE2',   // systemSuccessLight
+  WARNING:     '#FEBB30',   // systemWarning
+  WARNING_BG:  '#FFEECC',   // systemWarningLight
+  ERROR:       '#CC0000',   // systemError
+  ERROR_BG:    '#FFE0E0',   // systemErrorLight
+
+  // Secondary palette
+  TEAL:     '#56B7B2',   // secondary teal (green800)
+  VIOLET:   '#474E95',   // violetMain
 };

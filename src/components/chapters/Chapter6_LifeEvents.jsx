@@ -91,15 +91,15 @@ export default function Chapter6_LifeEvents({ state, dispatch, locked }) {
                   {/* Before / After */}
                   <div className="grid-halves" style={{ marginBottom: 12 }}>
                     <div style={{
-                      padding: '10px 12px', background: '#1A0505',
-                      borderRadius: 7, border: `1px solid #E53E3E33`,
+                      padding: '10px 12px', background: C.ERROR_BG,
+                      borderRadius: 7, border: `1px solid ${C.ERROR}33`,
                     }}>
-                      <div style={{ fontSize: 9, color: '#FC8181', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Current</div>
-                      <div style={{ fontSize: 22, fontWeight: 900, color: '#FC8181' }}>
+                      <div style={{ fontSize: 9, color: C.ERROR, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Current</div>
+                      <div style={{ fontSize: 22, fontWeight: 900, color: C.ERROR }}>
                         {isAnim ? '…' : event.optimized ? event.targetSteps : event.currentSteps}
                         <span style={{ fontSize: 10, fontWeight: 400, marginLeft: 3 }}>steps</span>
                       </div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: '#FCA5A5' }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: C.ERROR }}>
                         {isAnim ? '…' : event.optimized ? (event.targetDays === 0 ? 'instant' : `${event.targetDays}d`) : `${event.currentDays}d`}
                       </div>
                     </div>

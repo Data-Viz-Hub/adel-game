@@ -1,10 +1,10 @@
 import { C } from '../colors';
 
 const TYPE = {
-  success: { border: C.BLUE,   bg: `${C.BLUE_DIM}55`,  color: '#93C5FD', icon: '✓'  },
-  error:   { border: '#E53E3E', bg: '#2D0A0A',          color: '#FCA5A5', icon: '✗'  },
-  warning: { border: C.ORANGE,  bg: `${C.ORANGE}11`,    color: C.ORANGE,  icon: '⚠'  },
-  info:    { border: C.BLUE,    bg: `${C.BLUE_DIM}33`,  color: C.MUTED,   icon: 'ℹ'  },
+  success: { border: C.BLUE,    bg: `${C.BLUE}15`,    color: C.BLUE,    icon: '✓'  },
+  error:   { border: C.ERROR,   bg: C.ERROR_BG,        color: C.ERROR,   icon: '✗'  },
+  warning: { border: C.WARNING, bg: C.WARNING_BG,      color: C.MUTED,   icon: '⚠'  },
+  info:    { border: C.BLUE,    bg: `${C.BLUE}0F`,     color: C.MUTED,   icon: 'ℹ'  },
 };
 
 export default function NotificationBar({ notifications, dispatch }) {
@@ -22,7 +22,7 @@ export default function NotificationBar({ notifications, dispatch }) {
             background: s.bg, border: `1px solid ${s.border}`,
             borderRadius: 7, padding: '9px 12px',
             display: 'flex', alignItems: 'flex-start', gap: 8,
-            boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
             animation: 'slideIn 0.2s ease',
           }}>
             <span style={{ fontSize: 13, color: s.color, flexShrink: 0, marginTop: 1 }}>{s.icon}</span>

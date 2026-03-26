@@ -67,7 +67,7 @@ export default function Chapter5_Channels({ state, dispatch, locked }) {
           return (
             <div key={svc.id} style={{
               background: C.CARD,
-              border: `1px solid ${isCorrect ? C.BLUE + '66' : asgn?.channel && !isCorrect ? '#E53E3E44' : C.BORDER}`,
+              border: `1px solid ${isCorrect ? C.BLUE + '66' : asgn?.channel && !isCorrect ? C.ERROR + '44' : C.BORDER}`,
               borderRadius: 8, padding: '12px 14px',
             }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, flexWrap: 'wrap' }}>
@@ -85,7 +85,7 @@ export default function Chapter5_Channels({ state, dispatch, locked }) {
                     </div>
                   )}
                   {!isCorrect && asgn?.channel && (
-                    <div style={{ fontSize: 10, color: '#FC8181', marginTop: 4 }}>
+                    <div style={{ fontSize: 10, color: C.ERROR, marginTop: 4 }}>
                       ✗ {svc.hint}
                     </div>
                   )}
@@ -112,12 +112,12 @@ export default function Chapter5_Channels({ state, dispatch, locked }) {
                         style={{
                           padding: '5px 10px',
                           background: isSel
-                            ? (isCorrect ? `${C.BLUE_DIM}88` : '#2D0A0A')
+                            ? (isCorrect ? `${C.BLUE}22` : C.ERROR_BG)
                             : C.RAISED,
                           border: `1px solid ${isSel
-                            ? (isCorrect ? C.BLUE : '#E53E3E')
+                            ? (isCorrect ? C.BLUE : C.ERROR)
                             : lockReason ? C.FAINT : C.BORDER}`,
-                          color: lockReason ? C.FAINT : isSel ? (isCorrect ? C.BLUE : '#FC8181') : C.MUTED,
+                          color: lockReason ? C.FAINT : isSel ? (isCorrect ? C.BLUE : C.ERROR) : C.MUTED,
                           borderRadius: 5, cursor: lockReason || isCorrect ? 'not-allowed' : 'pointer',
                           fontSize: 11, fontWeight: isSel ? 700 : 400,
                           opacity: lockReason ? 0.4 : 1,

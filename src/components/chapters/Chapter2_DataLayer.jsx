@@ -200,8 +200,8 @@ export default function Chapter2_DataLayer({ state, dispatch, locked }) {
             {shuffledOpts.map(opt => (
               <button key={opt} onClick={() => handleAlign(aligningField.id, opt)} style={{
                 padding: '11px 14px',
-                background: wrongAnswer ? '#2D0A0A' : C.RAISED,
-                border: `1px solid ${wrongAnswer ? '#E53E3E' : C.BORDER}`,
+                background: wrongAnswer ? C.ERROR_BG : C.RAISED,
+                border: `1px solid ${wrongAnswer ? C.ERROR : C.BORDER}`,
                 color: C.TEXT, borderRadius: 7, cursor: 'pointer', textAlign: 'left',
                 fontFamily: "'DM Mono', monospace", fontSize: 12,
                 transition: 'background 0.15s',

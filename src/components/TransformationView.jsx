@@ -60,10 +60,10 @@ const CHAOS_CONNECTIONS = [
 ];
 
 const CLUSTER_LABELS = [
-  { label: 'Fiscal',    x: 590, y: 390, color: '#F2A800' },
-  { label: 'Social',    x: 80,  y: 390, color: '#48BB78' },
-  { label: 'Civil',     x: 300, y: 30,  color: '#9F7AEA' },
-  { label: 'Health',    x: 340, y: 420, color: '#FC8181' },
+  { label: 'Fiscal',    x: 590, y: 390, color: '#355C8C' },  // blue primary
+  { label: 'Social',    x: 80,  y: 390, color: '#15B094' },  // tealMain
+  { label: 'Civil',     x: 300, y: 30,  color: '#474E95' },  // violetMain
+  { label: 'Health',    x: 340, y: 420, color: '#D81884' },  // magentaMain
 ];
 
 function easeInOut(t) {
@@ -133,7 +133,7 @@ export default function TransformationView({ state, onClose }) {
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 1000,
-      background: 'rgba(3,8,18,0.97)',
+      background: 'rgba(240,244,249,0.99)',
       display: 'flex', flexDirection: 'column',
       overflow: 'hidden',
     }}>
@@ -194,7 +194,7 @@ export default function TransformationView({ state, onClose }) {
                 return (
                   <line key={`chaos-${idx}`}
                     x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y}
-                    stroke="#E53E3E" strokeWidth={1} opacity={op * 0.5}
+                    stroke={C.ERROR} strokeWidth={1} opacity={op * 0.5}
                     strokeDasharray="3,4"
                   />
                 );
@@ -244,7 +244,7 @@ export default function TransformationView({ state, onClose }) {
                 const pos = getNodePos(node.id);
                 const agency = node.agencyId ? state.agencies.find(a => a.id === node.agencyId) : null;
                 const inCloud = agency ? (agency.zone && agency.zone !== 'legacy') : true;
-                const nodeColor = inCloud ? C.BLUE : '#E53E3E';
+                const nodeColor = inCloud ? C.BLUE : C.ERROR;
 
                 return (
                   <g key={node.id}>
@@ -272,7 +272,7 @@ export default function TransformationView({ state, onClose }) {
               })}
 
               {/* Labels: CHAOS / ORDER */}
-              <text x={30} y={30} fill="#E53E3E" fontSize={13} fontWeight={700}
+              <text x={30} y={30} fill={C.ERROR} fontSize={13} fontWeight={700}
                 opacity={Math.max(0, 1 - animT * 3)}>
                 CHAOS
               </text>

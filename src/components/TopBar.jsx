@@ -6,9 +6,9 @@ export default function TopBar({ state }) {
   const pct = Math.min(100, Math.round((state.gameDay / GAME_DEADLINE_DAY) * 100));
 
   // Color shifts green → yellow → orange → red as deadline approaches
-  const urgency = daysLeft <= 60 ? '#E53E3E'
+  const urgency = daysLeft <= 60 ? C.ERROR
     : daysLeft <= 150 ? C.ORANGE
-    : daysLeft <= 300 ? '#ECC94B'
+    : daysLeft <= 300 ? C.WARNING
     : C.BLUE;
 
   const metrics = [

@@ -80,14 +80,14 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
       {/* Rogue alert */}
       {state.rogueAlertPending && (
         <div style={{
-          background: '#2D0A0A', border: `2px solid #E53E3E`,
+          background: C.ERROR_BG, border: `2px solid ${C.ERROR}`,
           borderRadius: 8, padding: '14px 16px', marginBottom: 16,
           animation: 'pulse 1s ease-in-out infinite',
         }}>
-          <div style={{ color: '#FC8181', fontWeight: 700, fontSize: 14, marginBottom: 6 }}>
+          <div style={{ color: C.ERROR, fontWeight: 700, fontSize: 14, marginBottom: 6 }}>
             🚨 Rogue Service Detected — No Catalog Validation!
           </div>
-          <p style={{ color: '#FCA5A5', fontSize: 12, margin: '0 0 10px', lineHeight: 1.5 }}>
+          <p style={{ color: C.ERROR, fontSize: 12, margin: '0 0 10px', lineHeight: 1.5 }}>
             An agency is publishing a service bypassing governance protocols.
           </p>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -115,7 +115,7 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
 
       {/* SVG Network — horizontally scrollable on mobile */}
       <div className="h-scroll" style={{
-        background: '#030812', border: `1px solid ${C.BORDER}`,
+        background: C.SVG_BG, border: `1px solid ${C.BORDER}`,
         borderRadius: 10, padding: 8,
       }}>
         <svg width={SVG_W} height={SVG_H} style={{ display: 'block' }}>
@@ -164,7 +164,7 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
             const isHov = hoveredNode === node.id;
             const agency = node.agencyId ? state.agencies.find(a => a.id === node.agencyId) : null;
             const inCloud = agency ? (agency.zone && agency.zone !== 'legacy') : true;
-            const borderColor = isSel ? C.ORANGE : inCloud ? C.BLUE : '#E53E3E';
+            const borderColor = isSel ? C.ORANGE : inCloud ? C.BLUE : C.ERROR;
 
             return (
               <g key={node.id}
@@ -190,7 +190,7 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
                   </text>
                 )}
                 {agency && !inCloud && (
-                  <text x={node.x + 10} y={node.y - 9} fill="#E53E3E" fontSize={9}>!</text>
+                  <text x={node.x + 10} y={node.y - 9} fill={C.ERROR} fontSize={9}>!</text>
                 )}
               </g>
             );
@@ -200,7 +200,7 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
 
       <div style={{ display: 'flex', gap: 16, marginTop: 10, fontSize: 11, color: C.MUTED, flexWrap: 'wrap' }}>
         <span><span style={{ color: C.BLUE }}>●</span> Cloud agency</span>
-        <span><span style={{ color: '#E53E3E' }}>●</span> Not migrated</span>
+        <span><span style={{ color: C.ERROR }}>●</span> Not migrated</span>
         <span><span style={{ color: C.ORANGE }}>●</span> Selected</span>
         <span style={{ marginLeft: 'auto' }}>Tap two nodes to connect</span>
       </div>

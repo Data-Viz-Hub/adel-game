@@ -10,7 +10,7 @@ const CLASS_COLORS = {
   public: C.BLUE,
   internal: C.BLUE,
   confidential: C.ORANGE,
-  secret: '#E53E3E',
+  secret: C.ERROR,
 };
 
 export default function Chapter1_Infrastructure({ state, dispatch }) {
