@@ -104,43 +104,203 @@ export function getLayerProgress(state) {
   };
 }
 
-export function isChapterUnlocked(chapterId, progress) {
+export function getChapterPrerequisites(chapterId, state) {
   switch (chapterId) {
-    case 1: return true;
-    case 2: return progress.infrastructure >= 30;
-    case 3: return progress.infrastructure >= 50 && progress.dataLayer >= 20;
-    case 4: return progress.interoperability >= 40 && progress.dataLayer >= 30;
-    case 5: return progress.appServices >= 50;
-    case 6: return progress.channels >= 60 && progress.interoperability >= 50 && progress.appServices >= 40;
-    case 7: return true; // always accessible
-    default: return false;
+    case 1:
+    case 7:
+      return { allMet: true, items: [] };
+
+    case 2: {
+      const cloud = state.agencies.filter(a => a.zone && a.zone !== 'legacy');
+      const i1 = {
+        id: 'cloud-min', met: cloud.length >= 5,
+        label: 'Core agencies on cloud infrastructure',
+        detail: 'At least 5 agencies must be on cloud infrastructure before their data can be standardized and cataloged. Without digital systems, there are no authoritative data sources.',
+        count: `${cloud.length} / 5`,
+        fixes: state.agencies.filter(a => !a.zone || a.zone === 'legacy').slice(0, 4).map(a => a.name),
+        fixesLabel: 'Still on legacy or unassigned:',
+        targetChapter: 1,
+      };
+      return { allMet: i1.met, items: [i1] };
+    }
+
+    case 3: {
+      const cloud = state.agencies.filter(a => a.zone && a.zone !== 'legacy');
+      const cataloged = state.dataFields.filter(f => f.cataloged);
+      const i1 = {
+        id: 'cloud-adel', met: cloud.length >= 8,
+        label: 'Agencies ready to host ADEL Security Servers',
+        detail: 'Each ADEL participant must run a Security Server inside its own infrastructure. At least 8 agencies must be cloud-hosted before Security Servers can be deployed and certified.',
+        count: `${cloud.length} / 8`,
+        fixes: state.agencies.filter(a => !a.zone || a.zone === 'legacy').slice(0, 4).map(a => a.name),
+        fixesLabel: 'Agencies to migrate:',
+        targetChapter: 1,
+      };
+      const i2 = {
+        id: 'catalog-min', met: cataloged.length >= 3,
+        label: 'Data fields registered in National Data Catalog',
+        detail: 'ADEL connections legally bind agencies to exchange specific, cataloged data. At least 3 authoritative data fields must be registered before connections have a semantic and legal basis.',
+        count: `${cataloged.length} / 3`,
+        fixes: state.dataFields.filter(f => !f.cataloged).slice(0, 3).map(f => f.label),
+        fixesLabel: 'Data fields to catalog:',
+        targetChapter: 2,
+      };
+      return { allMet: i1.met && i2.met, items: [i1, i2] };
+    }
+
+    case 4: {
+      const activeConns = Object.values(state.connections).filter(c => c.active).length;
+      const cataloged = state.dataFields.filter(f => f.cataloged);
+      const i1 = {
+        id: 'connections-min', met: activeConns >= 5,
+        label: 'Active ADEL connections as service backbone',
+        detail: 'Shared application services rely on ADEL to authenticate users and retrieve pre-filled data. At least 5 active data exchange connections are needed before platform tools can operate.',
+        count: `${activeConns} / 5`,
+        fixes: USEFUL_CONNECTIONS
+          .filter(([a, b]) => !state.connections[[a, b].sort().join('--')]?.active)
+          .slice(0, 3)
+          .map(([a, b]) => `${ADEL_NODES.find(n => n.id === a)?.name} ↔ ${ADEL_NODES.find(n => n.id === b)?.name}`),
+        fixesLabel: 'Connections to establish:',
+        targetChapter: 3,
+      };
+      const i2 = {
+        id: 'catalog-apps', met: cataloged.length >= 4,
+        label: 'Data fields available for service pre-fill',
+        detail: 'Shared applications read from the National Data Catalog to pre-fill forms and validate inputs. At least 4 cataloged fields are needed to cover identity, tax, and address data.',
+        count: `${cataloged.length} / 4`,
+        fixes: state.dataFields.filter(f => !f.cataloged).slice(0, 3).map(f => f.label),
+        fixesLabel: 'Data fields to catalog:',
+        targetChapter: 2,
+      };
+      return { allMet: i1.met && i2.met, items: [i1, i2] };
+    }
+
+    case 5: {
+      const deployed = state.serviceTools.filter(t => t.deployed);
+      const adopted = state.serviceTools.filter(t => t.deployed && (t.adopters / t.maxAdopters) >= 0.3);
+      const i1 = {
+        id: 'tools-deployed', met: deployed.length >= 3,
+        label: 'Shared service tools deployed',
+        detail: 'Service channels are only meaningful once digital tools exist to deliver through. Without deployed platforms, channel assignments are empty declarations.',
+        count: `${deployed.length} / 3`,
+        fixes: state.serviceTools.filter(t => !t.deployed).slice(0, 3).map(t => t.name),
+        fixesLabel: 'Tools to deploy:',
+        targetChapter: 4,
+      };
+      const i2 = {
+        id: 'tools-adopted', met: adopted.length >= 2,
+        label: 'Tools with active agency adoption (≥30%)',
+        detail: 'Channels are effective only when agencies actually use the tools behind them. At least 2 tools must reach 30%+ adoption before channel routing decisions are meaningful.',
+        count: `${adopted.length} / 2`,
+        fixes: deployed.filter(t => (t.adopters / t.maxAdopters) < 0.3)
+          .map(t => `${t.name} (${Math.round(t.adopters / t.maxAdopters * 100)}%)`).slice(0, 3),
+        fixesLabel: 'Tools needing onboarding:',
+        targetChapter: 4,
+      };
+      return { allMet: i1.met && i2.met, items: [i1, i2] };
+    }
+
+    case 6: {
+      const activeConns = Object.values(state.connections).filter(c => c.active).length;
+      const correct = Object.values(state.channelAssignments).filter(a => a.correct).length;
+      const adopted = state.serviceTools.filter(t => t.deployed && (t.adopters / t.maxAdopters) >= 0.3);
+      const i1 = {
+        id: 'connections-life', met: activeConns >= 8,
+        label: 'ADEL connections for automated event triggers',
+        detail: 'Life event automation requires reliable data propagation across agencies. When a hospital registers a birth, ADEL must automatically notify Finance, Justice, and Social Insurance. 8 active connections are the minimum viable network.',
+        count: `${activeConns} / 8`,
+        fixes: USEFUL_CONNECTIONS
+          .filter(([a, b]) => !state.connections[[a, b].sort().join('--')]?.active)
+          .slice(0, 3)
+          .map(([a, b]) => `${ADEL_NODES.find(n => n.id === a)?.name} ↔ ${ADEL_NODES.find(n => n.id === b)?.name}`),
+        fixesLabel: 'Missing connections:',
+        targetChapter: 3,
+      };
+      const i2 = {
+        id: 'channels-life', met: correct >= 8,
+        label: 'Correct service channel assignments',
+        detail: 'Life events span multiple services. Each sub-service must use the optimal channel — mixing in-person steps into a digital journey breaks the automation chain.',
+        count: `${correct} / 8`,
+        fixes: [],
+        fixesLabel: '',
+        targetChapter: 5,
+      };
+      const i3 = {
+        id: 'tools-life', met: adopted.length >= 2,
+        label: 'Citizen-facing tools operational',
+        detail: 'Life events require citizens to authenticate (e-Identity Gateway), sign documents (e-Signature), and receive notifications. Core tools must have sufficient agency adoption.',
+        count: `${adopted.length} / 2`,
+        fixes: state.serviceTools.filter(t => !t.deployed).slice(0, 2).map(t => t.name),
+        fixesLabel: 'Tools to deploy first:',
+        targetChapter: 4,
+      };
+      return { allMet: i1.met && i2.met && i3.met, items: [i1, i2, i3] };
+    }
+
+    default:
+      return { allMet: true, items: [] };
   }
 }
 
-export function getLockReason(chapterId, progress) {
-  switch (chapterId) {
-    case 2: return [
-      progress.infrastructure < 30 ? `Infrastructure ≥ 30% (currently ${progress.infrastructure}%)` : null,
-    ].filter(Boolean);
-    case 3: return [
-      progress.infrastructure < 50 ? `Infrastructure ≥ 50% (currently ${progress.infrastructure}%)` : null,
-      progress.dataLayer < 20 ? `Data Layer ≥ 20% (currently ${progress.dataLayer}%)` : null,
-    ].filter(Boolean);
-    case 4: return [
-      progress.interoperability < 40 ? `Interoperability ≥ 40% (currently ${progress.interoperability}%)` : null,
-      progress.dataLayer < 30 ? `Data Layer ≥ 30% (currently ${progress.dataLayer}%)` : null,
-    ].filter(Boolean);
-    case 5: return [
-      progress.appServices < 50 ? `Application Services ≥ 50% (currently ${progress.appServices}%)` : null,
-    ].filter(Boolean);
-    case 6: return [
-      progress.channels < 60 ? `Channels ≥ 60% (currently ${progress.channels}%)` : null,
-      progress.interoperability < 50 ? `Interoperability ≥ 50% (currently ${progress.interoperability}%)` : null,
-      progress.appServices < 40 ? `Application Services ≥ 40% (currently ${progress.appServices}%)` : null,
-    ].filter(Boolean);
-    default: return [];
+export function getLifeEventPrerequisites(event, state) {
+  const items = [];
+  for (const [a, b] of (event.requiredConnections || [])) {
+    const key = [a, b].sort().join('--');
+    const nA = ADEL_NODES.find(n => n.id === a);
+    const nB = ADEL_NODES.find(n => n.id === b);
+    items.push({
+      id: `conn-${key}`, type: 'connection', icon: '🔗',
+      met: !!state.connections[key]?.active,
+      label: `${nA?.name} ↔ ${nB?.name}`,
+      detail: state.connections[key]?.active ? 'Data exchange link active' : 'ADEL connection not established',
+      targetChapter: 3,
+    });
   }
+  for (const fieldId of (event.requiredFields || [])) {
+    const field = state.dataFields.find(f => f.id === fieldId);
+    const met = !!field?.cataloged;
+    items.push({
+      id: `field-${fieldId}`, type: 'dataField', icon: '🗄️',
+      met, label: field?.label || fieldId,
+      detail: met ? 'Cataloged in National Data Catalog' : 'Not registered in National Data Catalog',
+      targetChapter: 2,
+    });
+  }
+  for (const toolId of (event.requiredTools || [])) {
+    const tool = state.serviceTools.find(t => t.id === toolId);
+    const adoption = tool ? Math.round((tool.adopters / tool.maxAdopters) * 100) : 0;
+    const met = !!(tool?.deployed && tool.adopters > 0);
+    items.push({
+      id: `tool-${toolId}`, type: 'tool', icon: '⚙️',
+      met, label: tool?.name || toolId,
+      detail: !tool?.deployed ? 'Not yet deployed' : `${adoption}% agency adoption`,
+      targetChapter: 4,
+    });
+  }
+  if (event.requiredChannel) {
+    const asgn = state.channelAssignments[event.requiredChannel];
+    const svc = GOVERNMENT_SERVICES.find(s => s.id === event.requiredChannel);
+    items.push({
+      id: `ch-${event.requiredChannel}`, type: 'channel', icon: '📡',
+      met: !!asgn?.correct, label: svc?.name || event.requiredChannel,
+      detail: asgn?.correct ? 'Optimal delivery channel assigned' : 'Correct delivery channel not assigned',
+      targetChapter: 5,
+    });
+  }
+  return { allMet: items.every(i => i.met), items };
 }
+
+// Updated: takes full state instead of progress percentages
+export function isChapterUnlocked(chapterId, state) {
+  if (chapterId === 1 || chapterId === 7) return true;
+  return getChapterPrerequisites(chapterId, state).allMet;
+}
+
+export function getLockReason(chapterId, progress) {
+  // Legacy stub — use getChapterPrerequisites(chapterId, state) instead
+  return [];
+}
+
 
 function computeDerivedMetrics(state) {
   const progress = getLayerProgress(state);

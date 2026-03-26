@@ -1,37 +1,15 @@
 import { useState } from 'react';
 import ProgressBar from '../shared/ProgressBar';
-import { GOVERNMENT_SERVICES } from '../../gameData';
-import { calcLifeEventsProgress } from '../../gameReducer';
+import { calcLifeEventsProgress, getLifeEventPrerequisites } from '../../gameReducer';
 import { C } from '../../colors';
+
+const TYPE_CHAPTER = { connection: 3, dataField: 2, tool: 4, channel: 5 };
+const TYPE_LABEL = { connection: 'Layer 3', dataField: 'Layer 2', tool: 'Layer 4', channel: 'Layer 5' };
 
 export default function Chapter6_LifeEvents({ state, dispatch, locked }) {
   const [selected, setSelected] = useState(null);
   const [animating, setAnimating] = useState(null);
   const progress = calcLifeEventsProgress(state);
-
-  function getBlockers(event) {
-    const blockers = new Set();
-    event.requiredConnections?.forEach(([a, b]) => {
-      const key = [a, b].sort().join('--');
-      if (!state.connections[key]?.active) blockers.add('⚠ Missing ADEL connection — go to Chapter 3');
-    });
-    event.requiredFields?.forEach(fid => {
-      const f = state.dataFields.find(f => f.id === fid);
-      if (!f?.cataloged) blockers.add(`⚠ "${f?.label}" not cataloged — go to Chapter 2`);
-    });
-    event.requiredTools?.forEach(tid => {
-      const t = state.serviceTools.find(t => t.id === tid);
-      if (!t?.deployed) blockers.add(`⚠ "${t?.name}" not deployed — go to Chapter 4`);
-    });
-    if (event.requiredChannel) {
-      const asgn = state.channelAssignments[event.requiredChannel];
-      if (!asgn?.correct) {
-        const svc = GOVERNMENT_SERVICES.find(s => s.id === event.requiredChannel);
-        blockers.add(`⚠ Channel for "${svc?.name}" not optimized — go to Chapter 5`);
-      }
-    }
-    return [...blockers];
-  }
 
   function handleOptimize(event) {
     setAnimating(event.id);
@@ -54,15 +32,16 @@ export default function Chapter6_LifeEvents({ state, dispatch, locked }) {
 
       <div className="grid-auto">
         {state.lifeEvents.map(event => {
-          const blockers = event.optimized ? [] : getBlockers(event);
-          const canOptimize = blockers.length === 0 && !event.optimized;
+          const prereqs = event.optimized ? { allMet: true, items: [] } : getLifeEventPrerequisites(event, state);
+          const canOptimize = prereqs.allMet && !event.optimized;
+          const unmetCount = prereqs.items.filter(i => !i.met).length;
           const isAnim = animating === event.id;
           const isOpen = selected === event.id;
 
           return (
             <div key={event.id} style={{
               background: C.CARD,
-              border: `2px solid ${event.optimized ? C.BLUE + '66' : isOpen ? C.BORDER : C.BORDER}`,
+              border: `2px solid ${event.optimized ? C.BLUE + '66' : C.BORDER}`,
               borderRadius: 10, overflow: 'hidden',
             }}>
               {/* Header */}
@@ -118,21 +97,52 @@ export default function Chapter6_LifeEvents({ state, dispatch, locked }) {
                     </div>
                   </div>
 
-                  <div style={{ fontSize: 11, color: C.MUTED, marginBottom: 10, lineHeight: 1.5 }}>
+                  <div style={{ fontSize: 11, color: C.MUTED, marginBottom: 12, lineHeight: 1.5 }}>
                     {event.agencyNames.join(' → ')}
                   </div>
 
-                  {!event.optimized && blockers.length > 0 && (
-                    <div style={{
-                      background: `${C.ORANGE}11`, border: `1px solid ${C.ORANGE}44`,
-                      borderRadius: 7, padding: '10px 12px', marginBottom: 10,
-                    }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: C.ORANGE, marginBottom: 5 }}>
-                        {blockers.length} blocker{blockers.length > 1 ? 's' : ''}:
+                  {/* Prerequisites checklist */}
+                  {!event.optimized && prereqs.items.length > 0 && (
+                    <div style={{ marginBottom: 12 }}>
+                      <div style={{
+                        fontSize: 10, fontWeight: 700, color: C.FAINT,
+                        textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8,
+                      }}>
+                        Prerequisites — {prereqs.items.filter(i => i.met).length}/{prereqs.items.length} met
                       </div>
-                      {blockers.map((b, i) => (
-                        <div key={i} style={{ fontSize: 11, color: C.ORANGE, marginBottom: 2 }}>{b}</div>
-                      ))}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        {prereqs.items.map(item => (
+                          <div key={item.id} style={{
+                            display: 'flex', alignItems: 'center', gap: 8,
+                            padding: '8px 10px',
+                            background: item.met ? `${C.BLUE}08` : C.ERROR_BG,
+                            border: `1px solid ${item.met ? C.BLUE + '33' : C.ERROR + '33'}`,
+                            borderRadius: 6,
+                          }}>
+                            <span style={{ fontSize: 14, flexShrink: 0 }}>{item.met ? '✅' : '❌'}</span>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontSize: 11, fontWeight: 700, color: item.met ? C.BLUE : C.ERROR }}>
+                                {item.icon} {item.label}
+                              </div>
+                              <div style={{ fontSize: 10, color: C.MUTED, marginTop: 1 }}>{item.detail}</div>
+                            </div>
+                            {!item.met && (
+                              <button
+                                onClick={() => dispatch({ type: 'SET_CHAPTER', chapter: item.targetChapter })}
+                                style={{
+                                  flexShrink: 0, padding: '4px 10px',
+                                  background: C.BLUE, border: 'none',
+                                  color: '#fff', borderRadius: 5,
+                                  cursor: 'pointer', fontSize: 10, fontWeight: 700,
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                → {TYPE_LABEL[item.type]}
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
 
@@ -149,7 +159,7 @@ export default function Chapter6_LifeEvents({ state, dispatch, locked }) {
                         fontSize: 13, fontWeight: 700,
                       }}
                     >
-                      {isAnim ? '✨ Optimizing…' : canOptimize ? '🚀 Optimize Life Event' : `🔒 ${blockers.length} blocker${blockers.length > 1 ? 's' : ''} remaining`}
+                      {isAnim ? '✨ Optimizing…' : canOptimize ? '🚀 Optimize Life Event' : `🔒 ${unmetCount} prerequisite${unmetCount !== 1 ? 's' : ''} remaining`}
                     </button>
                   ) : (
                     <div style={{

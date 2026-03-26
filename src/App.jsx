@@ -1,5 +1,5 @@
 import { useReducer, useState, useEffect } from 'react';
-import { gameReducer, createInitialState, getLayerProgress, isChapterUnlocked, getLockReason } from './gameReducer';
+import { gameReducer, createInitialState, getLayerProgress, isChapterUnlocked, getChapterPrerequisites } from './gameReducer';
 import { saveGame, loadGame, clearGame, hasSavedGame } from './storage';
 import { C } from './colors';
 import IntroScreen from './components/IntroScreen';
@@ -9,6 +9,7 @@ import NotificationBar from './components/NotificationBar';
 import VictoryScreen from './components/VictoryScreen';
 import GameOverScreen from './components/GameOverScreen';
 import TransformationView from './components/TransformationView';
+import LockModal from './components/LockModal';
 import Chapter1_Infrastructure from './components/chapters/Chapter1_Infrastructure';
 import Chapter2_DataLayer from './components/chapters/Chapter2_DataLayer';
 import Chapter3_Interoperability from './components/chapters/Chapter3_Interoperability';
@@ -28,55 +29,6 @@ const CHAPTER_INFO = [
   { name: 'Legal & Governance',   icon: '⚖️', desc: 'Enact foundational laws to govern digital transformation' },
 ];
 
-// Detailed lock explanations per chapter
-const LOCK_DETAIL = {
-  2: (p) => [
-    p.infrastructure < 30 && `Migrate agencies to the cloud first — at least 9 of 30 agencies must be in Cloud A, Cloud B, or Hybrid zones (Infrastructure is at ${p.infrastructure}%, need 30%).`,
-  ].filter(Boolean),
-  3: (p) => [
-    p.infrastructure < 50 && `Half the agencies must be cloud-migrated before the ADEL network can be wired — Infrastructure is at ${p.infrastructure}%, need 50%.`,
-    p.dataLayer < 20 && `At least 2 data fields must be aligned to EU/ISO standards in the Data Layer before connections can be registered (Data Layer at ${p.dataLayer}%, need 20%).`,
-  ].filter(Boolean),
-  4: (p) => [
-    p.interoperability < 40 && `Deploy connections in the ADEL Network first — at least 6 of 15 connections must be active (Interoperability at ${p.interoperability}%, need 40%).`,
-    p.dataLayer < 30 && `Register more fields in the National Data Catalog — Data Layer must reach 30% (currently ${p.dataLayer}%).`,
-  ].filter(Boolean),
-  5: (p) => [
-    p.appServices < 50 && `Deploy and onboard agencies on shared tools first — e-Identity Gateway and at least 1 more service must reach 50% adoption (App Services at ${p.appServices}%, need 50%).`,
-  ].filter(Boolean),
-  6: (p) => [
-    p.channels < 60 && `Assign the correct channel to at least 10 of 16 government services in the Channels layer (currently ${p.channels}%, need 60%).`,
-    p.interoperability < 50 && `At least 8 ADEL connections must be active to enable automated life event triggers (Interoperability at ${p.interoperability}%, need 50%).`,
-    p.appServices < 40 && `More shared services must be adopted — App Services must reach 40% (currently ${p.appServices}%).`,
-  ].filter(Boolean),
-};
-
-function LockBanner({ chapterId, progress }) {
-  const reasons = LOCK_DETAIL[chapterId]?.(progress) || getLockReason(chapterId, progress);
-  if (!reasons.length) return null;
-  return (
-    <div style={{
-      margin: '16px 0',
-      padding: '14px 16px',
-      background: `${C.ORANGE}0F`,
-      border: `1px solid ${C.ORANGE}55`,
-      borderLeft: `4px solid ${C.ORANGE}`,
-      borderRadius: 8,
-    }}>
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
-        <span style={{ fontSize: 16 }}>⚠️</span>
-        <span style={{ fontWeight: 700, color: C.ORANGE, fontSize: 13 }}>
-          Prerequisites not yet met — actions in this layer are disabled
-        </span>
-      </div>
-      <ul style={{ margin: 0, paddingLeft: 18 }}>
-        {reasons.map((r, i) => (
-          <li key={i} style={{ color: C.MUTED, fontSize: 12, lineHeight: 1.7 }}>{r}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
 
 function initState() {
   const saved = loadGame();
@@ -92,6 +44,7 @@ export default function App() {
   const [showVictory, setShowVictory] = useState(false);
   const [victoryShown, setVictoryShown] = useState(false);
   const [showTransformation, setShowTransformation] = useState(false);
+  const [lockModalOpen, setLockModalOpen] = useState(false);
   // Detect an existing save once on mount
   const [hasSave] = useState(() => hasSavedGame());
 
@@ -147,7 +100,8 @@ export default function App() {
   }
 
   const progress = getLayerProgress(state);
-  const locked = !isChapterUnlocked(state.activeChapter, progress);
+  const locked = !isChapterUnlocked(state.activeChapter, state);
+  const prerequisites = locked ? getChapterPrerequisites(state.activeChapter, state) : null;
   const info = CHAPTER_INFO[state.activeChapter];
   const keys = ['infrastructure','dataLayer','interoperability','appServices','channels','lifeEvents','legal'];
 
@@ -217,14 +171,53 @@ export default function App() {
       </div>
 
       <main style={{ maxWidth: 1200, margin: '0 auto', padding: '0 16px 60px' }}>
-        {/* Prerequisite banner — shown inline, chapter is still visible */}
-        {locked && <LockBanner chapterId={state.activeChapter} progress={progress} />}
+        {/* Slim lock bar — chapter is still fully visible */}
+        {locked && prerequisites && (
+          <div style={{
+            margin: '16px 0 0',
+            padding: '10px 16px',
+            background: `${C.ORANGE}0F`,
+            border: `1px solid ${C.ORANGE}44`,
+            borderLeft: `4px solid ${C.ORANGE}`,
+            borderRadius: 8,
+            display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
+          }}>
+            <span style={{ fontSize: 15 }}>🔒</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <span style={{ fontWeight: 700, color: C.ORANGE, fontSize: 13 }}>
+                Actions disabled
+              </span>
+              <span style={{ color: C.MUTED, fontSize: 12, marginLeft: 8 }}>
+                {prerequisites.items.filter(i => !i.met).length} prerequisite{prerequisites.items.filter(i => !i.met).length > 1 ? 's' : ''} not yet met
+              </span>
+            </div>
+            <button
+              onClick={() => setLockModalOpen(true)}
+              style={{
+                padding: '6px 14px', flexShrink: 0,
+                background: C.CARD, border: `1px solid ${C.ORANGE}`,
+                color: C.ORANGE, borderRadius: 6,
+                cursor: 'pointer', fontSize: 12, fontWeight: 700,
+              }}
+            >
+              What's needed? →
+            </button>
+          </div>
+        )}
         {renderChapter()}
       </main>
 
       <NotificationBar notifications={state.notifications} dispatch={dispatch} />
       {showVictory && <VictoryScreen state={state} onClose={() => setShowVictory(false)} />}
       {showTransformation && <TransformationView state={state} onClose={() => setShowTransformation(false)} />}
+      {lockModalOpen && locked && prerequisites && (
+        <LockModal
+          chapterId={state.activeChapter}
+          prerequisites={prerequisites}
+          onClose={() => setLockModalOpen(false)}
+          onNavigate={chapter => dispatch({ type: 'SET_CHAPTER', chapter })}
+        />
+      )}
 
       {/* Floating buttons — bottom-left stack */}
       <div style={{ position: 'fixed', bottom: 20, left: 20, zIndex: 900, display: 'flex', flexDirection: 'column', gap: 8 }}>
