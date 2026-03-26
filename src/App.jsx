@@ -39,7 +39,7 @@ function initState() {
 }
 
 export default function App() {
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(() => hasSavedGame());
   const [state, dispatch] = useReducer(gameReducer, null, initState);
   const [showVictory, setShowVictory] = useState(false);
   const [victoryShown, setVictoryShown] = useState(false);

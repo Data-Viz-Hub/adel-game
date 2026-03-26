@@ -132,27 +132,27 @@ export default function TransformationView({ state, onClose }) {
 
   return (
     <div style={{
-      position: 'fixed', inset: 0, zIndex: 1000,
-      background: 'rgba(240,244,249,0.99)',
+      position: 'fixed', inset: 0, zIndex: 1100,
+      background: '#0A1628',
       display: 'flex', flexDirection: 'column',
       overflow: 'hidden',
     }}>
       {/* Header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '14px 20px', borderBottom: `1px solid ${C.BORDER}`,
+        padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.1)',
         flexShrink: 0,
       }}>
         <div>
           <div style={{ fontSize: 18, fontWeight: 900, color: C.ORANGE }}>Digital Transformation</div>
-          <div style={{ fontSize: 12, color: C.MUTED }}>Chaos → Order — {overallProgress}% complete</div>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Chaos → Order — {overallProgress}% complete</div>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
           <button
             onClick={() => setReplayKey(k => k + 1)}
             style={{
-              padding: '7px 14px', background: C.RAISED, border: `1px solid ${C.BORDER}`,
-              color: C.MUTED, borderRadius: 6, cursor: 'pointer', fontSize: 12,
+              padding: '7px 14px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)',
+              color: 'rgba(255,255,255,0.7)', borderRadius: 6, cursor: 'pointer', fontSize: 12,
             }}
           >
             ↺ Replay
@@ -160,8 +160,8 @@ export default function TransformationView({ state, onClose }) {
           <button
             onClick={onClose}
             style={{
-              padding: '7px 14px', background: C.BLUE_DIM, border: `1px solid ${C.BLUE}`,
-              color: C.TEXT, borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 700,
+              padding: '7px 14px', background: C.BLUE, border: `1px solid ${C.BLUE_DIM}`,
+              color: '#fff', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 700,
             }}
           >
             ✕ Close
@@ -174,15 +174,15 @@ export default function TransformationView({ state, onClose }) {
         {/* SVG panel */}
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 12 }}>
           <div className="h-scroll" style={{ width: '100%' }}>
-            <svg width={W} height={H} style={{ display: 'block', margin: '0 auto' }}>
+            <svg width={W} height={H} style={{ display: 'block', margin: '0 auto', background: '#0D1E38', borderRadius: 8 }}>
               {/* Background grid */}
               {Array.from({ length: 10 }).map((_, i) => (
                 <line key={`h${i}`} x1={0} y1={i * (H / 9)} x2={W} y2={i * (H / 9)}
-                  stroke={C.RAISED} strokeWidth={1} opacity={0.5} />
+                  stroke="rgba(255,255,255,0.05)" strokeWidth={1} />
               ))}
               {Array.from({ length: 15 }).map((_, i) => (
                 <line key={`v${i}`} x1={i * (W / 14)} y1={0} x2={i * (W / 14)} y2={H}
-                  stroke={C.RAISED} strokeWidth={1} opacity={0.5} />
+                  stroke="rgba(255,255,255,0.05)" strokeWidth={1} />
               ))}
 
               {/* Chaos connections (fade out as animT increases) */}
@@ -194,7 +194,7 @@ export default function TransformationView({ state, onClose }) {
                 return (
                   <line key={`chaos-${idx}`}
                     x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y}
-                    stroke={C.ERROR} strokeWidth={1} opacity={op * 0.5}
+                    stroke="#FF6B6B" strokeWidth={1} opacity={op * 0.6}
                     strokeDasharray="3,4"
                   />
                 );
@@ -212,7 +212,7 @@ export default function TransformationView({ state, onClose }) {
                   <g key={`org-${key}`}>
                     <line
                       x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y}
-                      stroke={isActive ? C.BLUE : C.FAINT}
+                      stroke={isActive ? '#6FA8FF' : 'rgba(255,255,255,0.2)'}
                       strokeWidth={isActive ? 2 : 1}
                       opacity={op}
                     />
@@ -242,25 +242,25 @@ export default function TransformationView({ state, onClose }) {
               {/* Nodes */}
               {ADEL_NODES.map(node => {
                 const pos = getNodePos(node.id);
-                const agency = node.agencyId ? state.agencies.find(a => a.id === node.agencyId) : null;
-                const inCloud = agency ? (agency.zone && agency.zone !== 'legacy') : true;
-                const nodeColor = inCloud ? C.BLUE : C.ERROR;
+                const agency = node.agencyId ? state.agencies?.find(a => a.id === node.agencyId) : null;
+                const inCloud = agency ? (agency.zone && agency.zone !== 'legacy') : false;
+                const nodeColor = inCloud ? '#6FA8FF' : '#FF8C6B';
 
                 return (
                   <g key={node.id}>
                     <circle
-                      cx={pos.x} cy={pos.y} r={13}
-                      fill={C.CARD}
+                      cx={pos.x} cy={pos.y} r={14}
+                      fill="#1A2E50"
                       stroke={nodeColor}
-                      strokeWidth={1.5}
+                      strokeWidth={2}
                     />
                     <text x={pos.x} y={pos.y + 4} textAnchor="middle"
                       fill={nodeColor} fontSize={9} fontWeight={700}>
                       {node.id.replace('n', '')}
                     </text>
                     {animT > 0.7 && (
-                      <text x={pos.x} y={pos.y - 17} textAnchor="middle"
-                        fill={C.MUTED} fontSize={8}
+                      <text x={pos.x} y={pos.y - 18} textAnchor="middle"
+                        fill="rgba(255,255,255,0.7)" fontSize={8}
                         opacity={Math.min(1, (animT - 0.7) * 5)}
                         style={{ pointerEvents: 'none' }}
                       >
@@ -272,11 +272,11 @@ export default function TransformationView({ state, onClose }) {
               })}
 
               {/* Labels: CHAOS / ORDER */}
-              <text x={30} y={30} fill={C.ERROR} fontSize={13} fontWeight={700}
+              <text x={30} y={30} fill="#FF6B6B" fontSize={13} fontWeight={700}
                 opacity={Math.max(0, 1 - animT * 3)}>
                 CHAOS
               </text>
-              <text x={W - 30} y={30} textAnchor="end" fill={C.BLUE} fontSize={13} fontWeight={700}
+              <text x={W - 30} y={30} textAnchor="end" fill="#6FA8FF" fontSize={13} fontWeight={700}
                 opacity={Math.min(1, animT * 3)}>
                 ORDER
               </text>
@@ -286,28 +286,28 @@ export default function TransformationView({ state, onClose }) {
 
         {/* Metrics sidebar */}
         <div style={{
-          width: 240, flexShrink: 0,
-          borderLeft: `1px solid ${C.BORDER}`,
+          width: 220, flexShrink: 0,
+          borderLeft: '1px solid rgba(255,255,255,0.1)',
           padding: '16px 14px',
           overflowY: 'auto',
           display: 'flex', flexDirection: 'column', gap: 10,
         }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: C.TEXT, marginBottom: 4 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: 4 }}>
             Layer Progress
           </div>
 
           {layerPcts.map(l => (
             <div key={l.key}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: C.MUTED, marginBottom: 3 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'rgba(255,255,255,0.5)', marginBottom: 3 }}>
                 <span>{l.label}</span>
-                <span style={{ color: l.pct >= 80 ? C.BLUE : l.pct >= 40 ? C.ORANGE : C.FAINT, fontWeight: 700 }}>
+                <span style={{ color: l.pct >= 80 ? '#6FA8FF' : l.pct >= 40 ? C.ORANGE : 'rgba(255,255,255,0.3)', fontWeight: 700 }}>
                   {l.pct}%
                 </span>
               </div>
-              <div style={{ height: 5, background: C.RAISED, borderRadius: 3, overflow: 'hidden' }}>
+              <div style={{ height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 3, overflow: 'hidden' }}>
                 <div style={{
                   width: `${l.pct}%`, height: '100%',
-                  background: l.pct >= 80 ? C.BLUE : l.pct >= 40 ? C.ORANGE : C.FAINT,
+                  background: l.pct >= 80 ? '#6FA8FF' : l.pct >= 40 ? C.ORANGE : 'rgba(255,255,255,0.25)',
                   borderRadius: 3, transition: 'width 0.4s',
                 }} />
               </div>
@@ -315,14 +315,14 @@ export default function TransformationView({ state, onClose }) {
           ))}
 
           <div style={{
-            marginTop: 12, padding: '12px', background: C.CARD,
-            borderRadius: 8, border: `1px solid ${C.BORDER}`,
+            marginTop: 8, padding: '12px', background: 'rgba(255,255,255,0.07)',
+            borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)',
           }}>
-            <div style={{ fontSize: 11, color: C.MUTED, marginBottom: 6 }}>Overall</div>
-            <div style={{ fontSize: 32, fontWeight: 900, color: overallProgress >= 80 ? C.BLUE : C.ORANGE }}>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginBottom: 6 }}>Overall</div>
+            <div style={{ fontSize: 32, fontWeight: 900, color: overallProgress >= 80 ? '#6FA8FF' : C.ORANGE }}>
               {overallProgress}%
             </div>
-            <div style={{ fontSize: 10, color: C.MUTED }}>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)' }}>
               {overallProgress >= 100 ? '🏆 Complete!' :
                overallProgress >= 80 ? '🚀 Almost there' :
                overallProgress >= 50 ? '⚡ Good progress' :
@@ -330,12 +330,12 @@ export default function TransformationView({ state, onClose }) {
             </div>
           </div>
 
-          <div style={{ padding: '10px', background: C.CARD, borderRadius: 8, border: `1px solid ${C.BORDER}` }}>
-            <div style={{ fontSize: 10, color: C.MUTED, marginBottom: 6 }}>Connections</div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: C.BLUE }}>
-              {activeConnKeys.size}<span style={{ fontSize: 11, color: C.MUTED }}>/{USEFUL_CONNECTIONS.length}</span>
+          <div style={{ padding: '10px', background: 'rgba(255,255,255,0.07)', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)' }}>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', marginBottom: 6 }}>Connections</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#6FA8FF' }}>
+              {activeConnKeys.size}<span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>/{USEFUL_CONNECTIONS.length}</span>
             </div>
-            <div style={{ fontSize: 10, color: C.MUTED }}>active ADEL links</div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>active ADEL links</div>
           </div>
         </div>
       </div>
