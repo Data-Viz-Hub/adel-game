@@ -25,7 +25,7 @@ export default function Navigation({ state, dispatch }) {
         minWidth: 'max-content',
       }}>
         {CHAPTERS.map(ch => {
-          const unlocked = isChapterUnlocked(ch.id, progress);
+          const unlocked = isChapterUnlocked(ch.id, state);
           const isActive = state.activeChapter === ch.id;
           const pct = progress[ch.key] || 0;
 
