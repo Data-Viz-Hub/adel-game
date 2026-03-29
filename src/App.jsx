@@ -34,8 +34,14 @@ function initState() {
   const saved = loadGame();
   const fresh = createInitialState();
   if (!saved) return fresh;
-  // Overlay saved values onto fresh state so any new keys get defaults
-  return { ...fresh, ...saved };
+  // Always use fresh agency list — restoring only zone assignments from saved
+  // (prevents stale agencies from old saves persisting after agency list changes)
+  const savedAgencies = saved.agencies || [];
+  const agencies = fresh.agencies.map(a => {
+    const s = savedAgencies.find(s => s.id === a.id);
+    return s ? { ...a, zone: s.zone } : a;
+  });
+  return { ...fresh, ...saved, agencies };
 }
 
 export default function App() {
