@@ -3,53 +3,47 @@
 // ============================================================
 
 export const AGENCIES = [
-  // Ministries (core)
-  { id: 'a01', name: 'Ministry of Finance',           sensitive: false, dataClassification: 'confidential' },
-  { id: 'a02', name: 'Ministry of Justice',           sensitive: false, dataClassification: 'internal' },
-  { id: 'a03', name: 'Ministry of Health',            sensitive: false, dataClassification: 'confidential' },
-  { id: 'a04', name: 'Ministry of Education',         sensitive: false, dataClassification: 'internal' },
-  { id: 'a05', name: 'Ministry of Labor',             sensitive: false, dataClassification: 'internal' },
-  { id: 'a06', name: 'Ministry of Economy',           sensitive: false, dataClassification: 'internal' },
-  { id: 'a07', name: 'Ministry of Transport',         sensitive: false, dataClassification: 'public' },
-  { id: 'a10', name: 'Ministry of Agriculture',       sensitive: false, dataClassification: 'internal' },
-  // Sensitive / security (must go to Hybrid)
-  { id: 'a11', name: 'Ministry of Defense',           sensitive: true,  dataClassification: 'secret' },
-  { id: 'a12', name: 'Ministry of Interior',          sensitive: true,  dataClassification: 'secret' },
-  { id: 'a13', name: 'Police of Armenia',             sensitive: true,  dataClassification: 'secret' },
-  { id: 'a14', name: 'National Security Service',     sensitive: true,  dataClassification: 'secret' },
-  { id: 'a26', name: 'Anti-Corruption Committee',     sensitive: true,  dataClassification: 'confidential' },
-  // Revenue & finance regulators
-  { id: 'a16', name: 'State Revenue Committee',       sensitive: false, dataClassification: 'confidential' },
-  { id: 'a22', name: 'Central Bank of Armenia',       sensitive: false, dataClassification: 'confidential' },
-  // Land & property
-  { id: 'a17', name: 'Cadastre Committee',            sensitive: false, dataClassification: 'confidential' },
-  { id: 'a24', name: 'State Property Management',     sensitive: false, dataClassification: 'internal' },
-  // Social & employment
-  { id: 'a19', name: 'State Employment Agency',       sensitive: false, dataClassification: 'internal' },
-  { id: 'a20', name: 'Social Insurance Fund',         sensitive: false, dataClassification: 'confidential' },
-  // Civil registration & migration
-  { id: 'a18', name: 'Civil Aviation Authority',      sensitive: false, dataClassification: 'internal' },
-  { id: 'a33', name: 'State Migration Service',       sensitive: false, dataClassification: 'confidential' },
-  { id: 'a32', name: "Prime Minister's Office",       sensitive: false, dataClassification: 'confidential' },
-  // Courts & oversight
-  { id: 'a29', name: 'Constitutional Court',          sensitive: false, dataClassification: 'public' },
-  // Regulators & inspectorates
-  { id: 'a21', name: 'Public Services Regulatory Commission', sensitive: false, dataClassification: 'public' },
-  { id: 'a35', name: 'Environmental Inspectorate',    sensitive: false, dataClassification: 'public' },
-  { id: 'a36', name: 'Food Safety Inspectorate',      sensitive: false, dataClassification: 'internal' },
-  { id: 'a37', name: 'Emergency Management Agency',   sensitive: false, dataClassification: 'internal' },
-  // Statistics & e-gov
-  { id: 'a23', name: 'National Statistics Service',   sensitive: false, dataClassification: 'public' },
-  { id: 'a34', name: 'Urban Development Committee',   sensitive: false, dataClassification: 'internal' },
-  { id: 'a42', name: 'E-Gov Infrastructure Center',  sensitive: false, dataClassification: 'internal' },
-]; // 30 agencies total
+  // ── Core Base Registries (a01–a11) — hold authoritative data, are ADEL nodes ──
+  { id: 'a01', name: 'State Population Registry',    sensitive: false, dataClassification: 'confidential', role: 'registry', description: 'Master registry of all persons: ID, name, DOB, address, civil status' },
+  { id: 'a02', name: 'Cadastre Committee',            sensitive: false, dataClassification: 'confidential', role: 'registry', description: 'Two registries: address register and real estate (property) register' },
+  { id: 'a03', name: 'Business Registry',             sensitive: false, dataClassification: 'internal',     role: 'registry', description: 'Authoritative registry of all legal entities and their directors/owners' },
+  { id: 'a04', name: 'State Revenue Committee',       sensitive: false, dataClassification: 'confidential', role: 'registry', description: 'Tax administration: Tax ID assignment, declarations, tax debt registry' },
+  { id: 'a05', name: 'Road Police',                   sensitive: true,  dataClassification: 'confidential', role: 'registry', description: 'Vehicle registry, driver licenses, road permits' },
+  { id: 'a06', name: 'Social Protection Ministry',    sensitive: false, dataClassification: 'confidential', role: 'registry', description: 'Pensions, disability benefits, child benefits, social assistance registry' },
+  { id: 'a07', name: 'Health Registry (e-Health)',    sensitive: false, dataClassification: 'confidential', role: 'registry', description: 'Medical records, birth/death certificates, vaccination registry' },
+  { id: 'a08', name: 'Police of Armenia',             sensitive: true,  dataClassification: 'secret',       role: 'registry', description: 'Criminal records, ID card registry, detention records, wanted persons' },
+  { id: 'a09', name: 'Ministry of Foreign Affairs',   sensitive: false, dataClassification: 'confidential', role: 'registry', description: 'Passport registry, consular services, visa records' },
+  { id: 'a10', name: 'Ministry of Justice',           sensitive: false, dataClassification: 'internal',     role: 'registry', description: 'Legal entity oversight, court registry, notary registry, penitentiary' },
+  { id: 'a11', name: 'Ministry of Economy',           sensitive: false, dataClassification: 'internal',     role: 'registry', description: 'Business permits, trade licenses, investment registry' },
+
+  // ── Consumer / Policy Agencies (a12–a30) — consume registry data ──
+  { id: 'a12', name: 'Ministry of Finance',           sensitive: false, dataClassification: 'confidential' },
+  { id: 'a13', name: 'Ministry of Labor',             sensitive: false, dataClassification: 'internal' },
+  { id: 'a14', name: 'Ministry of Education',         sensitive: false, dataClassification: 'internal' },
+  { id: 'a15', name: 'Ministry of Defense',           sensitive: true,  dataClassification: 'secret' },
+  { id: 'a16', name: 'Ministry of Interior',          sensitive: true,  dataClassification: 'confidential' },
+  { id: 'a17', name: 'Ministry of Healthcare',        sensitive: false, dataClassification: 'internal' },
+  { id: 'a18', name: 'Ministry of Transport',         sensitive: false, dataClassification: 'public' },
+  { id: 'a19', name: 'Ministry of Agriculture',       sensitive: false, dataClassification: 'internal' },
+  { id: 'a20', name: 'Ministry of Environment',       sensitive: false, dataClassification: 'public' },
+  { id: 'a21', name: 'State Employment Agency',       sensitive: false, dataClassification: 'internal' },
+  { id: 'a22', name: 'National Security Service',     sensitive: true,  dataClassification: 'secret' },
+  { id: 'a23', name: 'Prosecutor General Office',     sensitive: true,  dataClassification: 'secret' },
+  { id: 'a24', name: 'Central Bank of Armenia',       sensitive: false, dataClassification: 'confidential' },
+  { id: 'a25', name: 'EKENG (E-Gov Center)',           sensitive: false, dataClassification: 'internal' },
+  { id: 'a26', name: 'National Statistics Service',   sensitive: false, dataClassification: 'public' },
+  { id: 'a27', name: 'State Property Committee',      sensitive: false, dataClassification: 'internal' },
+  { id: 'a28', name: 'Anti-Corruption Committee',     sensitive: true,  dataClassification: 'confidential' },
+  { id: 'a29', name: 'Emergency Management Agency',   sensitive: false, dataClassification: 'internal' },
+  { id: 'a30', name: 'Migration Service',             sensitive: false, dataClassification: 'confidential' },
+]; // 30 agencies total (11 core registries + 19 consumer agencies)
 
 export const INFRASTRUCTURE_ZONES = [
   { id: 'cloud_a', name: 'Public Cloud A',     type: 'cloud',  capacity: 11, description: 'Modern cloud infrastructure — scalable, cost-effective' },
   { id: 'cloud_b', name: 'Public Cloud B',     type: 'cloud',  capacity: 11, description: 'Redundant cloud infrastructure — disaster recovery ready' },
-  { id: 'hybrid',  name: 'Hybrid Secure Zone', type: 'hybrid', capacity: 6,  description: 'For sensitive agencies — private cloud + dedicated security' },
+  { id: 'hybrid',  name: 'Hybrid Secure Zone', type: 'hybrid', capacity: 8,  description: 'For sensitive agencies — private cloud + dedicated security (6 sensitive agencies need this)' },
   { id: 'legacy',  name: 'Legacy Server Room', type: 'legacy', capacity: 4,  description: 'Existing on-premise — no migration needed but limited capability' },
-]; // Total capacity 32 — enough for all 30 agencies
+]; // Total capacity 34 — enough for all 30 agencies
 
 export const DATA_FIELDS = [
   {
@@ -135,37 +129,39 @@ export const DATA_FIELDS = [
 ];
 
 // Circle layout: center (350, 240), radius 175, 11 nodes, starting at top (-90°)
+// Nodes = the 11 core base registries — every other agency connects to at least one
 export const ADEL_NODES = [
-  { id: 'n01', name: 'Ministry of Finance',      x: 350, y: 65,  agencyId: 'a01' },
-  { id: 'n02', name: 'Ministry of Justice',      x: 443, y: 93,  agencyId: 'a02' },
-  { id: 'n03', name: 'Ministry of Health',       x: 507, y: 167, agencyId: 'a03' },
-  { id: 'n04', name: 'State Revenue Committee',  x: 520, y: 262, agencyId: 'a16' },
-  { id: 'n05', name: 'Social Insurance Fund',    x: 478, y: 352, agencyId: 'a20' },
-  { id: 'n06', name: 'State Employment Agency',  x: 396, y: 405, agencyId: 'a19' },
-  { id: 'n07', name: 'Ministry of Labor',        x: 304, y: 405, agencyId: 'a05' },
-  { id: 'n08', name: 'Cadastre Committee',       x: 222, y: 352, agencyId: 'a17' },
-  { id: 'n09', name: 'Ministry of Interior',     x: 180, y: 262, agencyId: 'a12' },
-  { id: 'n10', name: 'National Statistics Svc',  x: 193, y: 167, agencyId: 'a23' },
-  { id: 'n11', name: 'E-Gov Infra Center',       x: 257, y: 93,  agencyId: 'a42' },
+  { id: 'n01', name: 'Population Registry',   x: 350, y: 65,  agencyId: 'a01' },  // SPR — top (12 o'clock)
+  { id: 'n02', name: 'Cadastre Committee',     x: 443, y: 93,  agencyId: 'a02' },
+  { id: 'n03', name: 'Business Registry',      x: 507, y: 167, agencyId: 'a03' },
+  { id: 'n04', name: 'Revenue Committee',      x: 520, y: 262, agencyId: 'a04' },
+  { id: 'n05', name: 'Road Police',            x: 478, y: 352, agencyId: 'a05' },
+  { id: 'n06', name: 'Social Protection',      x: 396, y: 405, agencyId: 'a06' },
+  { id: 'n07', name: 'Health Registry',        x: 304, y: 405, agencyId: 'a07' },
+  { id: 'n08', name: 'Police of Armenia',      x: 222, y: 352, agencyId: 'a08' },
+  { id: 'n09', name: 'Foreign Affairs',        x: 180, y: 262, agencyId: 'a09' },
+  { id: 'n10', name: 'Ministry of Justice',    x: 193, y: 167, agencyId: 'a10' },
+  { id: 'n11', name: 'Ministry of Economy',    x: 257, y: 93,  agencyId: 'a11' },
 ];
 
-// Direct peer-to-peer connections — no central hub (decentralized ADEL architecture)
+// Direct peer-to-peer connections between base registries
+// SPR (n01) is the anchor: 8 of 15 connections involve it — any service with personal data needs SPR
 export const USEFUL_CONNECTIONS = [
-  ['n01', 'n04'],  // Finance ↔ Revenue: fiscal oversight
-  ['n01', 'n05'],  // Finance ↔ Social Insurance: payroll & pensions
-  ['n02', 'n09'],  // Justice ↔ Interior: civil registry & ID
-  ['n02', 'n08'],  // Justice ↔ Cadastre: property & land titles
-  ['n03', 'n05'],  // Health ↔ Social Insurance: medical benefits
-  ['n03', 'n10'],  // Health ↔ Statistics: public health data
-  ['n04', 'n05'],  // Revenue ↔ Social Insurance: contributions
-  ['n04', 'n10'],  // Revenue ↔ Statistics: tax analytics
-  ['n05', 'n06'],  // Social Insurance ↔ Employment: unemployment
-  ['n05', 'n07'],  // Social Insurance ↔ Labor: labor records
-  ['n06', 'n07'],  // Employment ↔ Labor: job market data
-  ['n08', 'n09'],  // Cadastre ↔ Interior: address registry
-  ['n09', 'n10'],  // Interior ↔ Statistics: population data
-  ['n11', 'n01'],  // E-Gov ↔ Finance: infrastructure billing
-  ['n11', 'n04'],  // E-Gov ↔ Revenue: digital service platform
+  ['n01', 'n02'],  // SPR ↔ Cadastre: person → registered address
+  ['n01', 'n03'],  // SPR ↔ Business Registry: person ↔ entity ownership / directorship
+  ['n01', 'n04'],  // SPR ↔ Revenue: person → Tax ID assignment
+  ['n01', 'n06'],  // SPR ↔ Social Protection: person → benefit eligibility
+  ['n01', 'n07'],  // SPR ↔ Health Registry: person → medical record linkage
+  ['n01', 'n08'],  // SPR ↔ Police: person ↔ criminal record / ID card
+  ['n01', 'n09'],  // SPR ↔ Foreign Affairs: person ↔ passport data
+  ['n01', 'n10'],  // SPR ↔ Justice: person ↔ legal proceedings
+  ['n02', 'n04'],  // Cadastre ↔ Revenue: property → property tax
+  ['n02', 'n10'],  // Cadastre ↔ Justice: property ↔ land title registry
+  ['n03', 'n04'],  // Business ↔ Revenue: entity → corporate / VAT tax
+  ['n03', 'n10'],  // Business ↔ Justice: entity → legal compliance & court data
+  ['n04', 'n05'],  // Revenue ↔ Road Police: vehicle → vehicle tax
+  ['n06', 'n07'],  // Social ↔ Health: disability benefits ↔ medical status
+  ['n11', 'n03'],  // Economy ↔ Business Registry: business permits ↔ registry
 ];
 
 export const SERVICE_TOOLS = [
@@ -205,14 +201,15 @@ export const LIFE_EVENTS = [
     id: 'le01',
     name: 'Having a Baby',
     icon: '👶',
-    agencies: ['a02', 'a03', 'a05', 'a20'],
-    agencyNames: ['Ministry of Justice', 'Ministry of Health', 'Ministry of Labor', 'Social Insurance Fund'],
+    agencies: ['a07', 'a01', 'a06', 'a10'],
+    agencyNames: ['Health Registry → Population Registry → Social Protection Ministry → Ministry of Justice'],
     currentSteps: 11,
     targetSteps: 1,
     currentDays: 45,
     targetDays: 0,
-    description: 'Birth registration, parental leave, child benefit, health card',
-    requiredConnections: [['n02', 'n09'], ['n03', 'n05'], ['n05', 'n07']],
+    description: 'Birth notification, civil registration, child benefit, health card',
+    // Hospital notifies SPR; SPR updates Social; SPR notifies Justice for civil registry
+    requiredConnections: [['n01', 'n07'], ['n01', 'n06'], ['n01', 'n10']],
     requiredFields: ['df01', 'df02', 'df10'],
     requiredTools: ['st01', 'st04'],
     requiredChannel: 'gs01',
@@ -221,14 +218,15 @@ export const LIFE_EVENTS = [
     id: 'le02',
     name: 'Getting Married',
     icon: '💍',
-    agencies: ['a02', 'a05', 'a16', 'a20'],
-    agencyNames: ['Ministry of Justice', 'Ministry of Labor', 'State Revenue Committee', 'Social Insurance Fund'],
+    agencies: ['a01', 'a10', 'a04', 'a06'],
+    agencyNames: ['Population Registry → Ministry of Justice → Revenue Committee → Social Protection Ministry'],
     currentSteps: 8,
     targetSteps: 1,
     currentDays: 20,
     targetDays: 1,
-    description: 'Marriage registration, tax status update, benefit recalculation',
-    requiredConnections: [['n02', 'n09'], ['n04', 'n05']],
+    description: 'Civil registration, tax status update, benefit recalculation',
+    // SPR registers civil status; Justice confirms; Revenue updates tax status; Social recalculates benefits
+    requiredConnections: [['n01', 'n10'], ['n01', 'n04'], ['n01', 'n06']],
     requiredFields: ['df01', 'df02'],
     requiredTools: ['st01'],
     requiredChannel: 'gs12',
@@ -237,14 +235,15 @@ export const LIFE_EVENTS = [
     id: 'le03',
     name: 'Starting a Business',
     icon: '🏢',
-    agencies: ['a02', 'a16', 'a22', 'a06'],
-    agencyNames: ['Ministry of Justice', 'State Revenue Committee', 'Central Bank of Armenia', 'Ministry of Economy'],
+    agencies: ['a03', 'a04', 'a10', 'a11'],
+    agencyNames: ['Business Registry → Revenue Committee → Ministry of Justice → Ministry of Economy'],
     currentSteps: 14,
     targetSteps: 2,
     currentDays: 30,
     targetDays: 1,
-    description: 'Entity registration, tax registration, bank account, permits',
-    requiredConnections: [['n02', 'n08'], ['n01', 'n04'], ['n11', 'n04']],
+    description: 'Entity registration, tax registration, legal compliance check, permit',
+    // Business Registry creates entity; Revenue assigns Tax ID; Justice confirms legal status; Economy issues permit
+    requiredConnections: [['n03', 'n04'], ['n03', 'n10'], ['n11', 'n03']],
     requiredFields: ['df04', 'df08'],
     requiredTools: ['st01', 'st05', 'st06'],
     requiredChannel: 'gs08',
@@ -253,14 +252,15 @@ export const LIFE_EVENTS = [
     id: 'le04',
     name: 'Losing a Job',
     icon: '💼',
-    agencies: ['a05', 'a19', 'a20', 'a16'],
-    agencyNames: ['Ministry of Labor', 'State Employment Agency', 'Social Insurance Fund', 'State Revenue Committee'],
+    agencies: ['a01', 'a06', 'a04', 'a21'],
+    agencyNames: ['Population Registry → Social Protection Ministry → Revenue Committee → Employment Agency'],
     currentSteps: 9,
     targetSteps: 1,
     currentDays: 21,
     targetDays: 0,
-    description: 'Unemployment benefit registration, job seeker status, tax update',
-    requiredConnections: [['n06', 'n07'], ['n05', 'n06'], ['n04', 'n05']],
+    description: 'Unemployment benefit trigger, job seeker registration, tax status update',
+    // SPR confirms identity; Social processes unemployment; Revenue updates tax; Employment registers as job seeker
+    requiredConnections: [['n01', 'n06'], ['n01', 'n04'], ['n06', 'n07']],
     requiredFields: ['df01', 'df05'],
     requiredTools: ['st01', 'st04'],
     requiredChannel: 'gs10',
@@ -269,14 +269,15 @@ export const LIFE_EVENTS = [
     id: 'le05',
     name: 'Moving to a New Address',
     icon: '🏠',
-    agencies: ['a02', 'a12', 'a16', 'a05'],
-    agencyNames: ['Ministry of Justice', 'Ministry of Interior', 'State Revenue Committee', 'Ministry of Labor'],
+    agencies: ['a01', 'a02', 'a04', 'a08'],
+    agencyNames: ['Population Registry → Cadastre Committee → Revenue Committee → Police of Armenia'],
     currentSteps: 7,
     targetSteps: 1,
     currentDays: 14,
     targetDays: 1,
-    description: 'Address update across all registries',
-    requiredConnections: [['n02', 'n09'], ['n08', 'n09'], ['n01', 'n04']],
+    description: 'Address update propagated across all base registries',
+    // Citizen updates SPR; Cadastre confirms address; Revenue updates tax address; Police updates ID
+    requiredConnections: [['n01', 'n02'], ['n02', 'n04'], ['n01', 'n08']],
     requiredFields: ['df01', 'df03'],
     requiredTools: ['st01'],
     requiredChannel: 'gs03',
@@ -285,14 +286,15 @@ export const LIFE_EVENTS = [
     id: 'le06',
     name: 'Retiring',
     icon: '🎯',
-    agencies: ['a20', 'a16', 'a02', 'a05'],
-    agencyNames: ['Social Insurance Fund', 'State Revenue Committee', 'Ministry of Justice', 'Ministry of Labor'],
+    agencies: ['a06', 'a04', 'a01', 'a07'],
+    agencyNames: ['Social Protection Ministry → Revenue Committee → Population Registry → Health Registry'],
     currentSteps: 10,
     targetSteps: 1,
     currentDays: 60,
     targetDays: 0,
-    description: 'Pension enrollment, benefit calculation, tax status change',
-    requiredConnections: [['n04', 'n05'], ['n05', 'n07'], ['n01', 'n04']],
+    description: 'Pension enrollment, contribution verification, tax status change',
+    // Social reads contribution history from Revenue; SPR confirms identity; Health confirms no disability conflict
+    requiredConnections: [['n01', 'n06'], ['n01', 'n04'], ['n06', 'n07']],
     requiredFields: ['df01', 'df05', 'df04'],
     requiredTools: ['st01', 'st04'],
     requiredChannel: 'gs13',
@@ -301,14 +303,15 @@ export const LIFE_EVENTS = [
     id: 'le07',
     name: 'Death in the Family',
     icon: '🕯️',
-    agencies: ['a03', 'a02', 'a17', 'a16'],
-    agencyNames: ['Ministry of Health', 'Ministry of Justice', 'Cadastre Committee', 'State Revenue Committee'],
+    agencies: ['a07', 'a01', 'a02', 'a04'],
+    agencyNames: ['Health Registry → Population Registry → Cadastre Committee → Revenue Committee'],
     currentSteps: 12,
     targetSteps: 2,
     currentDays: 90,
     targetDays: 7,
-    description: 'Death certificate, estate transfer, benefit termination, property transfer',
-    requiredConnections: [['n03', 'n05'], ['n02', 'n08'], ['n08', 'n09'], ['n01', 'n04']],
+    description: 'Death certificate, deregistration, property transfer, estate tax',
+    // Health issues death cert; SPR deregisters person; Cadastre transfers property; Revenue closes tax account
+    requiredConnections: [['n01', 'n07'], ['n01', 'n02'], ['n02', 'n10'], ['n01', 'n04']],
     requiredFields: ['df01', 'df02', 'df03'],
     requiredTools: ['st01', 'st06'],
     requiredChannel: 'gs07',
@@ -317,14 +320,15 @@ export const LIFE_EVENTS = [
     id: 'le08',
     name: 'Applying for a Building Permit',
     icon: '🏗️',
-    agencies: ['a34', 'a35', 'a17', 'a16'],
-    agencyNames: ['Urban Development Committee', 'Environmental Inspectorate', 'Cadastre Committee', 'State Revenue Committee'],
+    agencies: ['a02', 'a11', 'a04', 'a01'],
+    agencyNames: ['Cadastre Committee → Ministry of Economy → Revenue Committee → Population Registry'],
     currentSteps: 16,
     targetSteps: 3,
     currentDays: 120,
     targetDays: 14,
-    description: 'Property check, environmental clearance, permit issuance, fee payment',
-    requiredConnections: [['n02', 'n08'], ['n01', 'n04'], ['n11', 'n04']],
+    description: 'Property ownership check, permit issuance, fee payment, SPR owner verification',
+    // Cadastre confirms property ownership; Economy issues permit; Revenue collects fee; SPR verifies owner identity
+    requiredConnections: [['n02', 'n10'], ['n01', 'n04'], ['n11', 'n03']],
     requiredFields: ['df03', 'df08'],
     requiredTools: ['st05', 'st06'],
     requiredChannel: 'gs14',
