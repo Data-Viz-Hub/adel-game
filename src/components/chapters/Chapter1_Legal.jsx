@@ -9,7 +9,7 @@ export default function Chapter7_Legal({ state, dispatch, locked }) {
 
   return (
     <div style={{ padding: '20px 0' }}>
-      <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 7 — Legal & Governance</h2>
+      <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 1 — Legal & Governance</h2>
       <p style={{ color: C.MUTED, marginBottom: 16, fontSize: 13, lineHeight: 1.6 }}>
         Enact 4 foundational laws. Laws can be enacted at any time, but their impact only activates once the corresponding technical layer is ready.
       </p>

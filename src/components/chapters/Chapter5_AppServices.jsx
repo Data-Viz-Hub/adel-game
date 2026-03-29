@@ -11,20 +11,20 @@ export default function Chapter4_AppServices({ state, dispatch, locked }) {
     if (tool.deployed) return { ok: false };
     if (tool.requiresEid) {
       const eid = state.serviceTools.find(t => t.id === 'st01');
-      if (!eid?.deployed) return { ok: false, reason: 'Requires e-Identity Gateway deployed first', targetChapter: 4 };
+      if (!eid?.deployed) return { ok: false, reason: 'Requires e-Identity Gateway deployed first', targetChapter: 5 };
     }
     if (tool.requiresAdel) {
       const active = Object.values(state.connections).filter(c => c.active).length;
       const min = tool.minAdelConnections || 1;
-      if (active < min) return { ok: false, reason: `Requires ${min} active ADEL connection(s)`, targetChapter: 3 };
+      if (active < min) return { ok: false, reason: `Requires ${min} active ADEL connection(s)`, targetChapter: 4 };
     }
     if (tool.requiresHub) {
       const hasHub = state.serviceTools.some(t => t.category === 'Shared Service' && t.deployed && t.id !== tool.id);
-      if (!hasHub) return { ok: false, reason: 'Requires 1 other Shared Service deployed first', targetChapter: 4 };
+      if (!hasHub) return { ok: false, reason: 'Requires 1 other Shared Service deployed first', targetChapter: 5 };
     }
     if (tool.requiresMyData) {
       const md = state.serviceTools.find(t => t.id === 'st02');
-      if (!md?.deployed) return { ok: false, reason: 'Requires My Data Portal deployed first', targetChapter: 4 };
+      if (!md?.deployed) return { ok: false, reason: 'Requires My Data Portal deployed first', targetChapter: 5 };
     }
     if (state.budget < tool.cost) return { ok: false, reason: `Need ${tool.cost} 💰 (have ${state.budget})`, targetChapter: null };
     return { ok: true };
@@ -46,7 +46,7 @@ export default function Chapter4_AppServices({ state, dispatch, locked }) {
 
   return (
     <div style={{ padding: '20px 0' }}>
-      <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 4 — Application Services</h2>
+      <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 5 — Application Services</h2>
       <p style={{ color: C.MUTED, marginBottom: 16, fontSize: 13, lineHeight: 1.6 }}>
         Deploy 10 shared digital services and onboard agencies. Adoption speed varies by laws, interoperability, and budget.
       </p>
@@ -54,7 +54,7 @@ export default function Chapter4_AppServices({ state, dispatch, locked }) {
       <div style={{ marginBottom: 16 }}>
         <ProgressBar value={progress} label="Application Services Progress" height={10} />
         <div style={{ display: 'flex', gap: 10, marginTop: 6, fontSize: 11, color: C.MUTED, flexWrap: 'wrap' }}>
-          <span>🔓 Channels unlocks at 50%</span>
+          <span>🔓 Layer 6 (Channels) unlocks at 50%</span>
           {digitalIdLaw?.bonusApplied && <span style={{ color: C.BLUE }}>✓ Digital ID Law — e-ID 2×</span>}
           {interopPct >= 60 && <span style={{ color: C.BLUE }}>✓ High interop — all 1.5×</span>}
           {state.budget < 20 && <span style={{ color: C.ORANGE }}>⚠ Low budget — 0.5×</span>}

@@ -22,28 +22,28 @@ export default function Chapter5_Channels({ state, dispatch, locked }) {
 
   function isLocked(ch, svc) {
     if (ch.id === 'zero') {
-      if (!notif?.deployed) return 'Requires Notification Engine (Ch 4)';
-      if (activeConns < 3) return 'Requires ≥3 ADEL connections (Ch 3)';
+      if (!notif?.deployed) return 'Requires Notification Engine (Layer 5)';
+      if (activeConns < 3) return 'Requires ≥3 ADEL connections (Layer 4)';
     }
     if (ch.id === 'portal' && svc.requiresEid && !eid?.deployed)
-      return 'Requires e-Identity Gateway (Ch 4)';
+      return 'Requires e-Identity Gateway (Layer 5)';
     if (ch.id === 'mobile') {
-      if (svc.requiresEid && !eid?.deployed) return 'Requires e-Identity Gateway (Ch 4)';
-      if (svc.requiresNotification && !notif?.deployed) return 'Requires Notification Engine (Ch 4)';
+      if (svc.requiresEid && !eid?.deployed) return 'Requires e-Identity Gateway (Layer 5)';
+      if (svc.requiresNotification && !notif?.deployed) return 'Requires Notification Engine (Layer 5)';
     }
     return null;
   }
 
   return (
     <div style={{ padding: '20px 0' }}>
-      <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 5 — Channels</h2>
+      <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 6 — Channels</h2>
       <p style={{ color: C.MUTED, marginBottom: 16, fontSize: 13, lineHeight: 1.6 }}>
         Assign the optimal delivery channel for 16 services. Decision tree: automatable → Zero-Channel; routine → Mobile; complex → Portal; legally required → Physical.
       </p>
 
       <div style={{ marginBottom: 16 }}>
         <ProgressBar value={progress} label={`Channels — ${correct}/16 correct`} height={10} />
-        <div style={{ fontSize: 11, color: C.MUTED, marginTop: 6 }}>🔓 Life Events unlocks at 60%</div>
+        <div style={{ fontSize: 11, color: C.MUTED, marginTop: 6 }}>🔓 Layer 7 (Life Events) unlocks at 60%</div>
       </div>
 
       {/* Channel legend */}

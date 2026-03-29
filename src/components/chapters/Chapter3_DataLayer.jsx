@@ -56,7 +56,7 @@ export default function Chapter2_DataLayer({ state, dispatch, locked }) {
 
   return (
     <div style={{ padding: '20px 0' }}>
-      <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 2 — Data Layer</h2>
+      <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 3 — Data Layer</h2>
       <p style={{ color: C.MUTED, marginBottom: 16, fontSize: 13, lineHeight: 1.6 }}>
         Align 10 data fields to EU/ISO standards, then register them in the National Data Catalog.
         Wrong alignment answers cost 1 budget.

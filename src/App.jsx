@@ -10,23 +10,23 @@ import VictoryScreen from './components/VictoryScreen';
 import GameOverScreen from './components/GameOverScreen';
 import TransformationView from './components/TransformationView';
 import LockModal from './components/LockModal';
-import Chapter1_Infrastructure from './components/chapters/Chapter1_Infrastructure';
-import Chapter2_DataLayer from './components/chapters/Chapter2_DataLayer';
-import Chapter3_Interoperability from './components/chapters/Chapter3_Interoperability';
-import Chapter4_AppServices from './components/chapters/Chapter4_AppServices';
-import Chapter5_Channels from './components/chapters/Chapter5_Channels';
-import Chapter6_LifeEvents from './components/chapters/Chapter6_LifeEvents';
-import Chapter7_Legal from './components/chapters/Chapter7_Legal';
+import Chapter1_Legal from './components/chapters/Chapter1_Legal';
+import Chapter2_Infrastructure from './components/chapters/Chapter2_Infrastructure';
+import Chapter3_DataLayer from './components/chapters/Chapter3_DataLayer';
+import Chapter4_Interoperability from './components/chapters/Chapter4_Interoperability';
+import Chapter5_AppServices from './components/chapters/Chapter5_AppServices';
+import Chapter6_Channels from './components/chapters/Chapter6_Channels';
+import Chapter7_LifeEvents from './components/chapters/Chapter7_LifeEvents';
 
 const CHAPTER_INFO = [
   null,
-  { name: 'Infrastructure',       icon: '🏗️', desc: 'Migrate 30 government agencies to cloud infrastructure' },
+  { name: 'Legal & Governance',   icon: '⚖️', desc: 'Enact foundational laws — the legal mandate for digital transformation' },
+  { name: 'Infrastructure',       icon: '🏗️', desc: 'Migrate 11 core base registries to cloud infrastructure' },
   { name: 'Data Layer',           icon: '🗄️', desc: 'Standardize data fields and register in the National Data Catalog' },
-  { name: 'ADEL Network',         icon: '🔗', desc: 'Connect agencies via the ADEL data exchange hub' },
+  { name: 'ADEL Network',         icon: '🔗', desc: 'Connect agencies via peer-to-peer ADEL data exchange' },
   { name: 'Application Services', icon: '⚙️', desc: 'Deploy and adopt shared digital service tools' },
   { name: 'Channels',             icon: '📡', desc: 'Assign optimal delivery channels for 16 government services' },
-  { name: 'Life Events',          icon: '🌟', desc: 'Optimize 8 critical citizen life events end-to-end' },
-  { name: 'Legal & Governance',   icon: '⚖️', desc: 'Enact foundational laws to govern digital transformation' },
+  { name: 'Life Events',          icon: '🌟', desc: '🎯 GOAL — Optimize 8 citizen life events into seamless digital journeys' },
 ];
 
 
@@ -41,7 +41,7 @@ function initState() {
     const s = savedAgencies.find(s => s.id === a.id);
     return s ? { ...a, zone: s.zone } : a;
   });
-  return { ...fresh, ...saved, agencies };
+  return { ...fresh, ...saved, agencies, activeChapter: 7 };
 }
 
 export default function App() {
@@ -109,18 +109,18 @@ export default function App() {
   const locked = !isChapterUnlocked(state.activeChapter, state);
   const prerequisites = locked ? getChapterPrerequisites(state.activeChapter, state) : null;
   const info = CHAPTER_INFO[state.activeChapter];
-  const keys = ['infrastructure','dataLayer','interoperability','appServices','channels','lifeEvents','legal'];
+  const keys = ['legal','infrastructure','dataLayer','interoperability','appServices','channels','lifeEvents'];
 
   function renderChapter() {
     const props = { state, dispatch, locked };
     switch (state.activeChapter) {
-      case 1: return <Chapter1_Infrastructure {...props} />;
-      case 2: return <Chapter2_DataLayer {...props} />;
-      case 3: return <Chapter3_Interoperability {...props} />;
-      case 4: return <Chapter4_AppServices {...props} />;
-      case 5: return <Chapter5_Channels {...props} />;
-      case 6: return <Chapter6_LifeEvents {...props} />;
-      case 7: return <Chapter7_Legal {...props} />;
+      case 1: return <Chapter1_Legal {...props} />;
+      case 2: return <Chapter2_Infrastructure {...props} />;
+      case 3: return <Chapter3_DataLayer {...props} />;
+      case 4: return <Chapter4_Interoperability {...props} />;
+      case 5: return <Chapter5_AppServices {...props} />;
+      case 6: return <Chapter6_Channels {...props} />;
+      case 7: return <Chapter7_LifeEvents {...props} />;
       default: return null;
     }
   }

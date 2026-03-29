@@ -3,8 +3,8 @@ import ProgressBar from '../shared/ProgressBar';
 import { calcLifeEventsProgress, getLifeEventPrerequisites } from '../../gameReducer';
 import { C } from '../../colors';
 
-const TYPE_CHAPTER = { connection: 3, dataField: 2, tool: 4, channel: 5 };
-const TYPE_LABEL = { connection: 'Layer 3', dataField: 'Layer 2', tool: 'Layer 4', channel: 'Layer 5' };
+const TYPE_CHAPTER = { connection: 4, dataField: 3, tool: 5, channel: 6 };
+const TYPE_LABEL = { connection: 'Layer 4', dataField: 'Layer 3', tool: 'Layer 5', channel: 'Layer 6' };
 
 export default function Chapter6_LifeEvents({ state, dispatch, locked }) {
   const [selected, setSelected] = useState(null);
@@ -21,7 +21,7 @@ export default function Chapter6_LifeEvents({ state, dispatch, locked }) {
 
   return (
     <div style={{ padding: '20px 0' }}>
-      <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 6 — Life Events</h2>
+      <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 7 — Life Events</h2>
       <p style={{ color: C.MUTED, marginBottom: 16, fontSize: 13, lineHeight: 1.6 }}>
         Transform 8 citizen life events from bureaucratic chaos to seamless digital journeys. Each event checks all prior layers.
       </p>

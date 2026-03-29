@@ -30,7 +30,7 @@ export function createInitialState() {
     interoperabilityScore: 0,
     duplicatesRemaining: 340,
     trustIndex: 20,
-    activeChapter: 1,
+    activeChapter: 7,
     rogueAlertPending: false,
     rogueAlertCount: 0,
     victoryUnlocked: false,
@@ -106,11 +106,11 @@ export function getLayerProgress(state) {
 
 export function getChapterPrerequisites(chapterId, state) {
   switch (chapterId) {
-    case 1:
-    case 7:
+    case 1: // Legal — always unlocked
+    case 2: // Infrastructure — always unlocked
       return { allMet: true, items: [] };
 
-    case 2: {
+    case 3: { // Data Layer — needs cloud agencies
       const cloud = state.agencies.filter(a => a.zone && a.zone !== 'legacy');
       const i1 = {
         id: 'cloud-min', met: cloud.length >= 5,
@@ -119,12 +119,12 @@ export function getChapterPrerequisites(chapterId, state) {
         count: `${cloud.length} / 5`,
         fixes: state.agencies.filter(a => !a.zone || a.zone === 'legacy').slice(0, 4).map(a => a.name),
         fixesLabel: 'Still on legacy or unassigned:',
-        targetChapter: 1,
+        targetChapter: 2,
       };
       return { allMet: i1.met, items: [i1] };
     }
 
-    case 3: {
+    case 4: { // ADEL Network — needs cloud agencies + cataloged fields
       const cloud = state.agencies.filter(a => a.zone && a.zone !== 'legacy');
       const cataloged = state.dataFields.filter(f => f.cataloged);
       const i1 = {
@@ -134,7 +134,7 @@ export function getChapterPrerequisites(chapterId, state) {
         count: `${cloud.length} / 8`,
         fixes: state.agencies.filter(a => !a.zone || a.zone === 'legacy').slice(0, 4).map(a => a.name),
         fixesLabel: 'Agencies to migrate:',
-        targetChapter: 1,
+        targetChapter: 2,
       };
       const i2 = {
         id: 'catalog-min', met: cataloged.length >= 3,
@@ -143,12 +143,12 @@ export function getChapterPrerequisites(chapterId, state) {
         count: `${cataloged.length} / 3`,
         fixes: state.dataFields.filter(f => !f.cataloged).slice(0, 3).map(f => f.label),
         fixesLabel: 'Data fields to catalog:',
-        targetChapter: 2,
+        targetChapter: 3,
       };
       return { allMet: i1.met && i2.met, items: [i1, i2] };
     }
 
-    case 4: {
+    case 5: { // App Services — needs ADEL connections + cataloged fields
       const activeConns = Object.values(state.connections).filter(c => c.active).length;
       const cataloged = state.dataFields.filter(f => f.cataloged);
       const i1 = {
@@ -161,7 +161,7 @@ export function getChapterPrerequisites(chapterId, state) {
           .slice(0, 3)
           .map(([a, b]) => `${ADEL_NODES.find(n => n.id === a)?.name} ↔ ${ADEL_NODES.find(n => n.id === b)?.name}`),
         fixesLabel: 'Connections to establish:',
-        targetChapter: 3,
+        targetChapter: 4,
       };
       const i2 = {
         id: 'catalog-apps', met: cataloged.length >= 4,
@@ -170,12 +170,12 @@ export function getChapterPrerequisites(chapterId, state) {
         count: `${cataloged.length} / 4`,
         fixes: state.dataFields.filter(f => !f.cataloged).slice(0, 3).map(f => f.label),
         fixesLabel: 'Data fields to catalog:',
-        targetChapter: 2,
+        targetChapter: 3,
       };
       return { allMet: i1.met && i2.met, items: [i1, i2] };
     }
 
-    case 5: {
+    case 6: { // Channels — needs deployed + adopted tools
       const deployed = state.serviceTools.filter(t => t.deployed);
       const adopted = state.serviceTools.filter(t => t.deployed && (t.adopters / t.maxAdopters) >= 0.3);
       const i1 = {
@@ -185,7 +185,7 @@ export function getChapterPrerequisites(chapterId, state) {
         count: `${deployed.length} / 3`,
         fixes: state.serviceTools.filter(t => !t.deployed).slice(0, 3).map(t => t.name),
         fixesLabel: 'Tools to deploy:',
-        targetChapter: 4,
+        targetChapter: 5,
       };
       const i2 = {
         id: 'tools-adopted', met: adopted.length >= 2,
@@ -195,26 +195,26 @@ export function getChapterPrerequisites(chapterId, state) {
         fixes: deployed.filter(t => (t.adopters / t.maxAdopters) < 0.3)
           .map(t => `${t.name} (${Math.round(t.adopters / t.maxAdopters * 100)}%)`).slice(0, 3),
         fixesLabel: 'Tools needing onboarding:',
-        targetChapter: 4,
+        targetChapter: 5,
       };
       return { allMet: i1.met && i2.met, items: [i1, i2] };
     }
 
-    case 6: {
+    case 7: { // Life Events — needs connections + channels + tools
       const activeConns = Object.values(state.connections).filter(c => c.active).length;
       const correct = Object.values(state.channelAssignments).filter(a => a.correct).length;
       const adopted = state.serviceTools.filter(t => t.deployed && (t.adopters / t.maxAdopters) >= 0.3);
       const i1 = {
         id: 'connections-life', met: activeConns >= 8,
         label: 'ADEL connections for automated event triggers',
-        detail: 'Life event automation requires reliable data propagation across agencies. When a hospital registers a birth, ADEL must automatically notify Finance, Justice, and Social Insurance. 8 active connections are the minimum viable network.',
+        detail: 'Life event automation requires reliable data propagation across agencies. When a hospital registers a birth, ADEL must automatically notify the Population Registry, Justice, and Social Protection. 8 active connections are the minimum viable network.',
         count: `${activeConns} / 8`,
         fixes: USEFUL_CONNECTIONS
           .filter(([a, b]) => !state.connections[[a, b].sort().join('--')]?.active)
           .slice(0, 3)
           .map(([a, b]) => `${ADEL_NODES.find(n => n.id === a)?.name} ↔ ${ADEL_NODES.find(n => n.id === b)?.name}`),
         fixesLabel: 'Missing connections:',
-        targetChapter: 3,
+        targetChapter: 4,
       };
       const i2 = {
         id: 'channels-life', met: correct >= 8,
@@ -223,7 +223,7 @@ export function getChapterPrerequisites(chapterId, state) {
         count: `${correct} / 8`,
         fixes: [],
         fixesLabel: '',
-        targetChapter: 5,
+        targetChapter: 6,
       };
       const i3 = {
         id: 'tools-life', met: adopted.length >= 2,
@@ -232,7 +232,7 @@ export function getChapterPrerequisites(chapterId, state) {
         count: `${adopted.length} / 2`,
         fixes: state.serviceTools.filter(t => !t.deployed).slice(0, 2).map(t => t.name),
         fixesLabel: 'Tools to deploy first:',
-        targetChapter: 4,
+        targetChapter: 5,
       };
       return { allMet: i1.met && i2.met && i3.met, items: [i1, i2, i3] };
     }
@@ -253,7 +253,7 @@ export function getLifeEventPrerequisites(event, state) {
       met: !!state.connections[key]?.active,
       label: `${nA?.name} ↔ ${nB?.name}`,
       detail: state.connections[key]?.active ? 'Data exchange link active' : 'ADEL connection not established',
-      targetChapter: 3,
+      targetChapter: 4,
     });
   }
   for (const fieldId of (event.requiredFields || [])) {
@@ -263,7 +263,7 @@ export function getLifeEventPrerequisites(event, state) {
       id: `field-${fieldId}`, type: 'dataField', icon: '🗄️',
       met, label: field?.label || fieldId,
       detail: met ? 'Cataloged in National Data Catalog' : 'Not registered in National Data Catalog',
-      targetChapter: 2,
+      targetChapter: 3,
     });
   }
   for (const toolId of (event.requiredTools || [])) {
@@ -274,7 +274,7 @@ export function getLifeEventPrerequisites(event, state) {
       id: `tool-${toolId}`, type: 'tool', icon: '⚙️',
       met, label: tool?.name || toolId,
       detail: !tool?.deployed ? 'Not yet deployed' : `${adoption}% agency adoption`,
-      targetChapter: 4,
+      targetChapter: 5,
     });
   }
   if (event.requiredChannel) {
@@ -284,7 +284,7 @@ export function getLifeEventPrerequisites(event, state) {
       id: `ch-${event.requiredChannel}`, type: 'channel', icon: '📡',
       met: !!asgn?.correct, label: svc?.name || event.requiredChannel,
       detail: asgn?.correct ? 'Optimal delivery channel assigned' : 'Correct delivery channel not assigned',
-      targetChapter: 5,
+      targetChapter: 6,
     });
   }
   return { allMet: items.every(i => i.met), items };
@@ -292,7 +292,7 @@ export function getLifeEventPrerequisites(event, state) {
 
 // Updated: takes full state instead of progress percentages
 export function isChapterUnlocked(chapterId, state) {
-  if (chapterId === 1 || chapterId === 7) return true;
+  if (chapterId === 1 || chapterId === 2) return true;
   return getChapterPrerequisites(chapterId, state).allMet;
 }
 

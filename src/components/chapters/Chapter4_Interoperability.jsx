@@ -16,7 +16,7 @@ function splitLabel(name) {
 }
 
 const STEPS = [
-  { title: 'Deploy Security Server', desc: 'Each agency needs a Security Server in the cloud. Auto-checked against Chapter 1 migration status.', action: 'Deploy Security Server' },
+  { title: 'Deploy Security Server', desc: 'Each agency needs a Security Server in the cloud. Auto-checked against Layer 2 (Infrastructure) migration status.', action: 'Deploy Security Server' },
   { title: 'Exchange mTLS Certificates', desc: 'Establish a trusted encrypted channel. Cost: 1 💰', action: 'Exchange Certificates (−1 💰)' },
   { title: 'Register Legal Agreement & Catalog', desc: 'Connection metadata must be registered in the Data Catalog. Legal agreement governs data exchange.', action: 'Register & Activate Connection' },
 ];
@@ -48,7 +48,7 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
       if (!node?.agencyId) return true;
       const agency = state.agencies.find(a => a.id === node.agencyId);
       if (agency && (!agency.zone || agency.zone === 'legacy')) {
-        alert(`⚠️ ${node.name} not in cloud — migrate first (Chapter 1)`);
+        alert(`⚠️ ${node.name} not in cloud — migrate first (Layer 2: Infrastructure)`);
         return false;
       }
       return true;
@@ -56,7 +56,7 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
     if (!checkCloud(selectedNode) || !checkCloud(nodeId)) { setSelectedNode(null); return; }
 
     if (!state.dataFields.some(f => f.cataloged)) {
-      alert('⚠️ Register at least one data field in the Catalog first (Chapter 2)');
+      alert('⚠️ Register at least one data field in the Catalog first (Layer 3: Data)');
       setSelectedNode(null);
       return;
     }
@@ -70,7 +70,7 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
 
   return (
     <div style={{ padding: '20px 0' }}>
-      <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 3 — ADEL Network</h2>
+      <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 4 — ADEL Network</h2>
       <p style={{ color: C.MUTED, marginBottom: 16, fontSize: 13, lineHeight: 1.6 }}>
         Connect agencies via direct peer-to-peer ADEL links — no central hub. Each connection requires 3 steps: Security Server → mTLS Certificate → Legal Agreement.
       </p>

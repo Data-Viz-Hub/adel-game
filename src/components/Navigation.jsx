@@ -2,13 +2,13 @@ import { getLayerProgress, isChapterUnlocked } from '../gameReducer';
 import { C } from '../colors';
 
 const CHAPTERS = [
-  { id: 1, name: 'Infrastructure', icon: '🏗️', key: 'infrastructure' },
-  { id: 2, name: 'Data Layer',     icon: '🗄️', key: 'dataLayer' },
-  { id: 3, name: 'ADEL Network',   icon: '🔗', key: 'interoperability' },
-  { id: 4, name: 'App Services',   icon: '⚙️', key: 'appServices' },
-  { id: 5, name: 'Channels',       icon: '📡', key: 'channels' },
-  { id: 6, name: 'Life Events',    icon: '🌟', key: 'lifeEvents' },
-  { id: 7, name: 'Legal',          icon: '⚖️', key: 'legal' },
+  { id: 1, name: 'Legal',          icon: '⚖️', key: 'legal' },
+  { id: 2, name: 'Infrastructure', icon: '🏗️', key: 'infrastructure' },
+  { id: 3, name: 'Data Layer',     icon: '🗄️', key: 'dataLayer' },
+  { id: 4, name: 'ADEL Network',   icon: '🔗', key: 'interoperability' },
+  { id: 5, name: 'App Services',   icon: '⚙️', key: 'appServices' },
+  { id: 6, name: 'Channels',       icon: '📡', key: 'channels' },
+  { id: 7, name: 'Life Events',    icon: '🌟', key: 'lifeEvents' },
 ];
 
 export default function Navigation({ state, dispatch }) {
