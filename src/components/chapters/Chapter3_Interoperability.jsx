@@ -8,6 +8,13 @@ import { C } from '../../colors';
 const SVG_W = 700;
 const SVG_H = 480;
 
+function splitLabel(name) {
+  const words = name.split(' ');
+  if (words.length === 1) return [name];
+  const mid = Math.ceil(words.length / 2);
+  return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
+}
+
 const STEPS = [
   { title: 'Deploy Security Server', desc: 'Each agency needs a Security Server in the cloud. Auto-checked against Chapter 1 migration status.', action: 'Deploy Security Server' },
   { title: 'Exchange mTLS Certificates', desc: 'Establish a trusted encrypted channel. Cost: 1 💰', action: 'Exchange Certificates (−1 💰)' },
@@ -165,6 +172,8 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
             const agency = node.agencyId ? state.agencies.find(a => a.id === node.agencyId) : null;
             const inCloud = agency ? (agency.zone && agency.zone !== 'legacy') : true;
             const borderColor = isSel ? C.ORANGE : inCloud ? C.BLUE : C.ERROR;
+            const lines = splitLabel(node.name);
+            const lineOffset = lines.length === 2 ? 5 : 0;
 
             return (
               <g key={node.id}
@@ -174,23 +183,23 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
                 style={{ cursor: locked ? 'default' : 'pointer' }}
               >
                 <circle
-                  cx={node.x} cy={node.y} r={13}
-                  fill={C.CARD}
+                  cx={node.x} cy={node.y} r={22}
+                  fill={isSel || isHov ? C.RAISED : C.CARD}
                   stroke={borderColor}
                   strokeWidth={isSel ? 2.5 : 1.5}
                 />
-                <text x={node.x} y={node.y + 4} textAnchor="middle"
-                  fill={borderColor} fontSize={9} fontWeight={700}>
-                  {node.id.replace('n', '')}
-                </text>
-                {(isHov || isSel) && (
-                  <text x={node.x} y={node.y - 18} textAnchor="middle"
-                    fill={C.TEXT} fontSize={9} style={{ pointerEvents: 'none' }}>
-                    {node.name}
+                {lines.map((line, i) => (
+                  <text key={i}
+                    x={node.x} y={node.y - lineOffset + i * 10 + 3}
+                    textAnchor="middle"
+                    fill={borderColor} fontSize={7} fontWeight={700}
+                    style={{ pointerEvents: 'none' }}
+                  >
+                    {line}
                   </text>
-                )}
+                ))}
                 {agency && !inCloud && (
-                  <text x={node.x + 10} y={node.y - 9} fill={C.ERROR} fontSize={9}>!</text>
+                  <text x={node.x + 16} y={node.y - 16} fill={C.ERROR} fontSize={9} style={{ pointerEvents: 'none' }}>!</text>
                 )}
               </g>
             );

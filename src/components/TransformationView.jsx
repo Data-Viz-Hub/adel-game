@@ -66,6 +66,13 @@ const CLUSTER_LABELS = [
   { label: 'Health',    x: 340, y: 420, color: '#D81884' },  // magentaMain
 ];
 
+function splitLabel(name) {
+  const words = name.split(' ');
+  if (words.length === 1) return [name];
+  const mid = Math.ceil(words.length / 2);
+  return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
+}
+
 function easeInOut(t) {
   return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 }
@@ -245,28 +252,27 @@ export default function TransformationView({ state, onClose }) {
                 const agency = node.agencyId ? state.agencies?.find(a => a.id === node.agencyId) : null;
                 const inCloud = agency ? (agency.zone && agency.zone !== 'legacy') : false;
                 const nodeColor = inCloud ? '#6FA8FF' : '#FF8C6B';
+                const lines = splitLabel(node.name);
+                const lineOffset = lines.length === 2 ? 4.5 : 0;
 
                 return (
                   <g key={node.id}>
                     <circle
-                      cx={pos.x} cy={pos.y} r={14}
+                      cx={pos.x} cy={pos.y} r={18}
                       fill="#1A2E50"
                       stroke={nodeColor}
                       strokeWidth={2}
                     />
-                    <text x={pos.x} y={pos.y + 4} textAnchor="middle"
-                      fill={nodeColor} fontSize={9} fontWeight={700}>
-                      {node.id.replace('n', '')}
-                    </text>
-                    {animT > 0.7 && (
-                      <text x={pos.x} y={pos.y - 18} textAnchor="middle"
-                        fill="rgba(255,255,255,0.7)" fontSize={8}
-                        opacity={Math.min(1, (animT - 0.7) * 5)}
+                    {lines.map((line, i) => (
+                      <text key={i}
+                        x={pos.x} y={pos.y - lineOffset + i * 9 + 3}
+                        textAnchor="middle"
+                        fill={nodeColor} fontSize={6.5} fontWeight={700}
                         style={{ pointerEvents: 'none' }}
                       >
-                        {node.name.split(' ').slice(-1)[0]}
+                        {line}
                       </text>
-                    )}
+                    ))}
                   </g>
                 );
               })}

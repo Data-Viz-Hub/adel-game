@@ -16,34 +16,14 @@ export const AGENCIES = [
   { id: 'a10', name: 'Ministry of Justice',           sensitive: false, dataClassification: 'internal',     role: 'registry', description: 'Legal entity oversight, court registry, notary registry, penitentiary' },
   { id: 'a11', name: 'Ministry of Economy',           sensitive: false, dataClassification: 'internal',     role: 'registry', description: 'Business permits, trade licenses, investment registry' },
 
-  // ── Consumer / Policy Agencies (a12–a30) — consume registry data ──
-  { id: 'a12', name: 'Ministry of Finance',           sensitive: false, dataClassification: 'confidential' },
-  { id: 'a13', name: 'Ministry of Labor',             sensitive: false, dataClassification: 'internal' },
-  { id: 'a14', name: 'Ministry of Education',         sensitive: false, dataClassification: 'internal' },
-  { id: 'a15', name: 'Ministry of Defense',           sensitive: true,  dataClassification: 'secret' },
-  { id: 'a16', name: 'Ministry of Interior',          sensitive: true,  dataClassification: 'confidential' },
-  { id: 'a17', name: 'Ministry of Healthcare',        sensitive: false, dataClassification: 'internal' },
-  { id: 'a18', name: 'Ministry of Transport',         sensitive: false, dataClassification: 'public' },
-  { id: 'a19', name: 'Ministry of Agriculture',       sensitive: false, dataClassification: 'internal' },
-  { id: 'a20', name: 'Ministry of Environment',       sensitive: false, dataClassification: 'public' },
-  { id: 'a21', name: 'State Employment Agency',       sensitive: false, dataClassification: 'internal' },
-  { id: 'a22', name: 'National Security Service',     sensitive: true,  dataClassification: 'secret' },
-  { id: 'a23', name: 'Prosecutor General Office',     sensitive: true,  dataClassification: 'secret' },
-  { id: 'a24', name: 'Central Bank of Armenia',       sensitive: false, dataClassification: 'confidential' },
-  { id: 'a25', name: 'EKENG (E-Gov Center)',           sensitive: false, dataClassification: 'internal' },
-  { id: 'a26', name: 'National Statistics Service',   sensitive: false, dataClassification: 'public' },
-  { id: 'a27', name: 'State Property Committee',      sensitive: false, dataClassification: 'internal' },
-  { id: 'a28', name: 'Anti-Corruption Committee',     sensitive: true,  dataClassification: 'confidential' },
-  { id: 'a29', name: 'Emergency Management Agency',   sensitive: false, dataClassification: 'internal' },
-  { id: 'a30', name: 'Migration Service',             sensitive: false, dataClassification: 'confidential' },
-]; // 30 agencies total (11 core registries + 19 consumer agencies)
+]; // 11 core base registries — each is an authoritative data owner and an ADEL node
 
 export const INFRASTRUCTURE_ZONES = [
   { id: 'cloud_a', name: 'Public Cloud A',     type: 'cloud',  capacity: 11, description: 'Modern cloud infrastructure — scalable, cost-effective' },
   { id: 'cloud_b', name: 'Public Cloud B',     type: 'cloud',  capacity: 11, description: 'Redundant cloud infrastructure — disaster recovery ready' },
-  { id: 'hybrid',  name: 'Hybrid Secure Zone', type: 'hybrid', capacity: 8,  description: 'For sensitive agencies — private cloud + dedicated security (6 sensitive agencies need this)' },
-  { id: 'legacy',  name: 'Legacy Server Room', type: 'legacy', capacity: 4,  description: 'Existing on-premise — no migration needed but limited capability' },
-]; // Total capacity 34 — enough for all 30 agencies
+  { id: 'hybrid',  name: 'Hybrid Secure Zone', type: 'hybrid', capacity: 4,  description: 'For sensitive agencies — private cloud + dedicated security (Road Police and Police require this)' },
+  { id: 'legacy',  name: 'Legacy Server Room', type: 'legacy', capacity: 2,  description: 'Existing on-premise — no migration needed but limited capability' },
+]; // Total capacity 28 — enough for all 11 agencies
 
 export const DATA_FIELDS = [
   {
@@ -138,10 +118,10 @@ export const ADEL_NODES = [
   { id: 'n05', name: 'Road Police',            x: 478, y: 352, agencyId: 'a05' },
   { id: 'n06', name: 'Social Protection',      x: 396, y: 405, agencyId: 'a06' },
   { id: 'n07', name: 'Health Registry',        x: 304, y: 405, agencyId: 'a07' },
-  { id: 'n08', name: 'Police of Armenia',      x: 222, y: 352, agencyId: 'a08' },
+  { id: 'n08', name: 'Police',                  x: 222, y: 352, agencyId: 'a08' },
   { id: 'n09', name: 'Foreign Affairs',        x: 180, y: 262, agencyId: 'a09' },
-  { id: 'n10', name: 'Ministry of Justice',    x: 193, y: 167, agencyId: 'a10' },
-  { id: 'n11', name: 'Ministry of Economy',    x: 257, y: 93,  agencyId: 'a11' },
+  { id: 'n10', name: 'Justice',               x: 193, y: 167, agencyId: 'a10' },
+  { id: 'n11', name: 'Economy',               x: 257, y: 93,  agencyId: 'a11' },
 ];
 
 // Direct peer-to-peer connections between base registries
@@ -252,8 +232,8 @@ export const LIFE_EVENTS = [
     id: 'le04',
     name: 'Losing a Job',
     icon: '💼',
-    agencies: ['a01', 'a06', 'a04', 'a21'],
-    agencyNames: ['Population Registry → Social Protection Ministry → Revenue Committee → Employment Agency'],
+    agencies: ['a01', 'a06', 'a04'],
+    agencyNames: ['Population Registry → Social Protection Ministry → Revenue Committee'],
     currentSteps: 9,
     targetSteps: 1,
     currentDays: 21,
