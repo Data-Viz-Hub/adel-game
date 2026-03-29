@@ -148,14 +148,17 @@ export default function Chapter6_LifeEvents({ state, dispatch, locked }) {
 
                   {!event.optimized ? (
                     <button
-                      onClick={() => canOptimize && !locked && handleOptimize(event)}
-                      disabled={!canOptimize || isAnim || locked}
+                      onClick={() => {
+                        if (canOptimize && !locked) handleOptimize(event);
+                        else setSelected(event.id);
+                      }}
+                      disabled={isAnim}
                       style={{
                         width: '100%', padding: '11px',
                         background: canOptimize ? C.BLUE_DIM : C.RAISED,
                         border: `2px solid ${canOptimize ? C.BLUE : C.BORDER}`,
-                        color: canOptimize ? C.TEXT : C.FAINT,
-                        borderRadius: 8, cursor: canOptimize ? 'pointer' : 'not-allowed',
+                        color: canOptimize ? C.TEXT : C.MUTED,
+                        borderRadius: 8, cursor: isAnim ? 'default' : 'pointer',
                         fontSize: 13, fontWeight: 700,
                       }}
                     >

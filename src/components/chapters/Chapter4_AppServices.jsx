@@ -11,22 +11,22 @@ export default function Chapter4_AppServices({ state, dispatch, locked }) {
     if (tool.deployed) return { ok: false };
     if (tool.requiresEid) {
       const eid = state.serviceTools.find(t => t.id === 'st01');
-      if (!eid?.deployed) return { ok: false, reason: 'Requires e-Identity Gateway deployed first' };
+      if (!eid?.deployed) return { ok: false, reason: 'Requires e-Identity Gateway deployed first', targetChapter: 4 };
     }
     if (tool.requiresAdel) {
       const active = Object.values(state.connections).filter(c => c.active).length;
       const min = tool.minAdelConnections || 1;
-      if (active < min) return { ok: false, reason: `Requires ${min} ADEL connection(s) (Chapter 3)` };
+      if (active < min) return { ok: false, reason: `Requires ${min} active ADEL connection(s)`, targetChapter: 3 };
     }
     if (tool.requiresHub) {
       const hasHub = state.serviceTools.some(t => t.category === 'Shared Service' && t.deployed && t.id !== tool.id);
-      if (!hasHub) return { ok: false, reason: 'Requires 1 other Shared Service deployed first' };
+      if (!hasHub) return { ok: false, reason: 'Requires 1 other Shared Service deployed first', targetChapter: 4 };
     }
     if (tool.requiresMyData) {
       const md = state.serviceTools.find(t => t.id === 'st02');
-      if (!md?.deployed) return { ok: false, reason: 'Requires My Data Portal deployed first' };
+      if (!md?.deployed) return { ok: false, reason: 'Requires My Data Portal deployed first', targetChapter: 4 };
     }
-    if (state.budget < tool.cost) return { ok: false, reason: `Need ${tool.cost} 💰 (have ${state.budget})` };
+    if (state.budget < tool.cost) return { ok: false, reason: `Need ${tool.cost} 💰 (have ${state.budget})`, targetChapter: null };
     return { ok: true };
   }
 
@@ -72,7 +72,7 @@ export default function Chapter4_AppServices({ state, dispatch, locked }) {
           </h3>
           <div className="grid-auto">
             {tools.map(tool => {
-              const { ok, reason } = canDeploy(tool);
+              const { ok, reason, targetChapter } = canDeploy(tool);
               const pct = Math.round(tool.adopters / tool.maxAdopters * 100);
               const m = getMultiplier(tool);
               const canAdopt = tool.deployed && tool.adopters < tool.maxAdopters && state.budget >= 1;
@@ -124,16 +124,20 @@ export default function Chapter4_AppServices({ state, dispatch, locked }) {
                         fontSize: 10, color: C.ORANGE, marginBottom: 8,
                         padding: '5px 8px', background: `${C.ORANGE}11`, borderRadius: 5,
                       }}>⚠ {reason}</div>}
-                      <button onClick={() => ok && !locked && dispatch({ type: 'DEPLOY_TOOL', toolId: tool.id })} disabled={!ok || locked}
+                      <button
+                        onClick={() => {
+                          if (ok && !locked) dispatch({ type: 'DEPLOY_TOOL', toolId: tool.id });
+                          else if (targetChapter) dispatch({ type: 'SET_CHAPTER', chapter: targetChapter });
+                        }}
                         style={{
                           width: '100%', padding: '9px',
                           background: ok ? C.BLUE_DIM : C.RAISED,
                           border: `1px solid ${ok ? C.BLUE : C.BORDER}`,
-                          color: ok ? C.TEXT : C.FAINT,
-                          borderRadius: 6, cursor: ok ? 'pointer' : 'not-allowed',
+                          color: ok ? C.TEXT : C.MUTED,
+                          borderRadius: 6, cursor: 'pointer',
                           fontSize: 12, fontWeight: 600,
                         }}>
-                        {ok ? `Deploy (−${tool.cost}💰)` : 'Locked'}
+                        {ok ? `Deploy (−${tool.cost}💰)` : targetChapter ? `🔒 Go to Layer ${targetChapter}` : '🔒 Locked'}
                       </button>
                     </>
                   )}
