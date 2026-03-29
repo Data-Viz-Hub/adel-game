@@ -86,7 +86,7 @@ export default function Chapter6_LifeEvents({ state, dispatch, locked }) {
                       padding: '10px 12px', background: `${C.BLUE_DIM}22`,
                       borderRadius: 7, border: `1px solid ${C.BLUE}33`,
                     }}>
-                      <div style={{ fontSize: 9, color: C.BLUE, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>ADEL Target</div>
+                      <div style={{ fontSize: 9, color: C.BLUE, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>DPI Target</div>
                       <div style={{ fontSize: 22, fontWeight: 900, color: C.BLUE }}>
                         {event.targetSteps}
                         <span style={{ fontSize: 10, fontWeight: 400, marginLeft: 3 }}>steps</span>

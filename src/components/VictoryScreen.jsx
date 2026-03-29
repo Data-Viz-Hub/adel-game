@@ -88,7 +88,7 @@ export default function VictoryScreen({ state, onClose }) {
 
         <button onClick={onClose} style={{
           padding: '13px 32px',
-          background: C.ORANGE, border: 'none', color: '#000',
+          background: C.ORANGE, border: 'none', color: '#fff',
           borderRadius: 10, cursor: 'pointer', fontSize: 15, fontWeight: 700,
           boxShadow: `0 4px 20px ${C.ORANGE}44`,
         }}>

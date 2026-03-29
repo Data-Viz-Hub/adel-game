@@ -224,7 +224,7 @@ export default function Chapter3_DataLayer({ state, dispatch, locked }) {
             disabled={!catalogOwner}
             style={{
               marginTop: 18, width: '100%', padding: '12px',
-              background: C.ORANGE, border: 'none', color: '#000',
+              background: C.ORANGE, border: 'none', color: '#fff',
               borderRadius: 8, cursor: catalogOwner ? 'pointer' : 'not-allowed',
               fontSize: 14, fontWeight: 700,
               opacity: catalogOwner ? 1 : 0.4,

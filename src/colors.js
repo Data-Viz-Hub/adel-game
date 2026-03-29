@@ -1,5 +1,5 @@
 // Light theme — government portal palette
-// primary: #355C8C (deep blue), secondary: #56B7B2 (teal), accent: #FF6A38 (orange)
+// primary: #355C8C (deep blue), secondary: #56B7B2 (teal), active: #1A3F6F (deep active blue)
 
 export const C = {
   // Backgrounds
@@ -12,8 +12,8 @@ export const C = {
   // Brand colors
   BLUE:     '#355C8C',   // primary blue (blue800 / primary)
   BLUE_DIM: '#5A7AA2',   // secondary blue (blue700)
-  ORANGE:   '#FF6A38',   // accent orange (orangeMain)
-  ORANGE_DIM:'#FFA688',  // dimmer orange (orangeHigh)
+  ORANGE:   '#355C8C',   // active blue (same as primary — replaces orange accent)
+  ORANGE_DIM:'#5A7AA2',  // dimmer active blue (same as blue_dim)
 
   // Text
   TEXT:     '#1A1A1A',   // primary text (text800)

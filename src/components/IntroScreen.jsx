@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { C } from '../colors';
 
 const LAYERS = [
-  { n: 1, icon: '🏗️', name: 'Infrastructure',    desc: 'Migrate agencies to cloud' },
-  { n: 2, icon: '🗄️', name: 'Data Layer',        desc: 'Standardize & catalog data' },
-  { n: 3, icon: '🔗', name: 'ADEL Network',      desc: 'Connect agencies via data exchange hub' },
-  { n: 4, icon: '⚙️', name: 'App Services',      desc: 'Deploy shared digital tools' },
-  { n: 5, icon: '📡', name: 'Channels',           desc: 'Route services to best delivery channel' },
-  { n: 6, icon: '🌟', name: 'Life Events',        desc: 'Transform citizen journeys end-to-end' },
-  { n: 7, icon: '⚖️', name: 'Legal',              desc: 'Enact laws to govern the transformation' },
+  { n: 1, icon: '⚖️', name: 'Legal',              desc: 'Enact laws to govern the transformation' },
+  { n: 2, icon: '🏗️', name: 'Infrastructure',    desc: 'Migrate agencies to cloud' },
+  { n: 3, icon: '🗄️', name: 'Data Layer',        desc: 'Standardize & catalog data' },
+  { n: 4, icon: '🔗', name: 'ADEL Network',      desc: 'Connect agencies via data exchange hub' },
+  { n: 5, icon: '⚙️', name: 'App Services',      desc: 'Deploy shared digital tools' },
+  { n: 6, icon: '📡', name: 'Channels',           desc: 'Route services to best delivery channel' },
+  { n: 7, icon: '🌟', name: 'Life Events',        desc: 'Transform citizen journeys end-to-end — GOAL' },
 ];
 
 export default function IntroScreen({ onStart, onContinue, hasSave }) {
@@ -74,9 +74,9 @@ export default function IntroScreen({ onStart, onContinue, hasSave }) {
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
               {[
-                ['30', 'agencies'],
+                ['11', 'core registries'],
                 ['7', 'layers'],
-                ['340', 'duplicates to eliminate'],
+                ['8', 'life events to optimize'],
                 ['100', 'budget tokens'],
               ].map(([val, lbl]) => (
                 <div key={lbl} style={{
@@ -109,7 +109,7 @@ export default function IntroScreen({ onStart, onContinue, hasSave }) {
                     onClick={onContinue}
                     style={{
                       padding: '12px 28px',
-                      background: C.ORANGE, border: 'none', color: '#000',
+                      background: C.ORANGE, border: 'none', color: '#fff',
                       borderRadius: 8, cursor: 'pointer',
                       fontSize: 14, fontWeight: 900,
                       boxShadow: `0 4px 16px ${C.ORANGE}44`,
@@ -142,17 +142,17 @@ export default function IntroScreen({ onStart, onContinue, hasSave }) {
             </h2>
             <p style={{ color: C.MUTED, marginBottom: 20, lineHeight: 1.7, fontSize: 14 }}>
               Armenia's digital transformation follows the{' '}
-              <strong style={{ color: C.TEXT }}>ADEL Framework</strong> — a real-world
-              architecture used by Estonia, Georgia, and Armenia itself.
+              <strong style={{ color: C.TEXT }}>DPI Framework</strong> — a real-world
+              architecture for building digital public infrastructure layer by layer.
               You will build each layer from the ground up.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
               {[
                 { icon: '✅', title: 'Unlock layers',       desc: 'Complete each layer to unlock the next. Layers are interdependent — the network needs the cloud, the apps need the network.' },
-                { icon: '💰', title: 'Manage your budget',  desc: 'Every action costs budget tokens. Migrations: 2–3. Certificates: 1. Tools: 3. Wrong answers penalize you. Manage wisely.' },
-                { icon: '🔒', title: 'Handle sensitive data', desc: 'Security agencies (Defense, Police, NSS) contain secret-classified data. Put them in the Hybrid Secure Zone or lose Trust.' },
-                { icon: '🚀', title: 'Win the game',        desc: 'Reach 80% on Infrastructure, Data, and Interoperability. Optimize 75% of life events. Enact 3+ laws.' },
+                { icon: '💰', title: 'Manage your budget',  desc: 'Every action costs budget tokens. Migrations: 2–3. Certificates: 1. Tools: 3. Manage wisely.' },
+                { icon: '🔒', title: 'Handle sensitive data', desc: 'Police contains secret-classified data. Put it in the Hybrid Secure Zone or lose Trust.' },
+                { icon: '🚀', title: 'Win the game',        desc: 'Reach 80% on Infrastructure, Data, and ADEL Network. Optimize 75% of life events. Enact 3+ laws.' },
               ].map(item => (
                 <div key={item.title} style={{
                   display: 'flex', gap: 12, padding: '12px 14px',
@@ -208,24 +208,23 @@ export default function IntroScreen({ onStart, onContinue, hasSave }) {
           </div>
         )}
 
-        {/* Slide 3 — ADEL concept */}
+        {/* Slide 3 — DPI concept */}
         {slide === 3 && (
           <div>
             <h2 style={{ margin: '0 0 6px', fontSize: 24, color: C.ORANGE }}>
-              🔗 What is ADEL?
+              🏛️ What is DPI?
             </h2>
             <p style={{ color: C.MUTED, marginBottom: 20, fontSize: 14, lineHeight: 1.7 }}>
-              <strong style={{ color: C.TEXT }}>ADEL (Armenian Data Exchange Layer)</strong> is
-              Armenia's national data exchange hub — similar to Estonia's X-Road or
-              Georgia's Data Exchange Agency.
-              It lets government agencies securely share data without duplicating it.
+              <strong style={{ color: C.TEXT }}>Digital Public Infrastructure (DPI)</strong> is
+              the set of shared, open digital systems that enable governments to deliver
+              services at scale — from identity and data exchange to payments and life events.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
               {[
                 {
                   icon: '🔄', title: 'Once-only principle',
-                  body: 'Citizens submit data once. All agencies retrieve it from the authoritative source via ADEL instead of asking again.'
+                  body: 'Citizens submit data once. All agencies retrieve it from the authoritative source via the data exchange layer instead of asking again.'
                 },
                 {
                   icon: '🛡️', title: 'Security by design',
@@ -237,7 +236,7 @@ export default function IntroScreen({ onStart, onContinue, hasSave }) {
                 },
                 {
                   icon: '🌟', title: 'Life event approach',
-                  body: 'Instead of 11 trips to 4 offices to register a baby, ADEL triggers all updates automatically from a single hospital event.'
+                  body: 'Instead of 11 trips to 4 offices to register a baby, the system triggers all updates automatically from a single hospital event.'
                 },
               ].map(item => (
                 <div key={item.title} style={{
@@ -259,7 +258,7 @@ export default function IntroScreen({ onStart, onContinue, hasSave }) {
               onClick={onStart}
               style={{
                 width: '100%', padding: '16px',
-                background: C.ORANGE, border: 'none', color: '#000',
+                background: C.ORANGE, border: 'none', color: '#fff',
                 borderRadius: 10, cursor: 'pointer',
                 fontSize: 16, fontWeight: 900, letterSpacing: '0.04em',
                 boxShadow: `0 4px 24px ${C.ORANGE}55`,

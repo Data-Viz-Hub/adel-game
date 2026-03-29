@@ -254,7 +254,7 @@ export default function Chapter3_Interoperability({ state, dispatch, locked }) {
                 onClick={() => dispatch({ type: 'ADVANCE_CONNECTION_STEP', connectionKey: modalKey })}
                 style={{
                   width: '100%', padding: '12px',
-                  background: C.ORANGE, border: 'none', color: '#000',
+                  background: C.ORANGE, border: 'none', color: '#fff',
                   borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 700,
                 }}
               >
