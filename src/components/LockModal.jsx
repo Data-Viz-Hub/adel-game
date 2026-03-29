@@ -2,23 +2,23 @@ import Modal from './shared/Modal';
 import { C } from '../colors';
 
 const CHAPTER_CONTEXT = {
-  2: {
+  3: {
     icon: '🗄️', name: 'Data Layer',
     why: 'The National Data Catalog can only register data from systems that are already digital. Without cloud-hosted agencies there are no authoritative data sources to standardize.',
   },
-  3: {
+  4: {
     icon: '🔗', name: 'ADEL Network',
     why: 'The data exchange network requires two things: agencies must have cloud infrastructure to host Security Servers, and the Data Catalog must define what data flows — otherwise connections have no legal or semantic basis.',
   },
-  4: {
+  5: {
     icon: '⚙️', name: 'Application Services',
     why: 'Shared platforms rely on the ADEL backbone to authenticate users and retrieve pre-filled data. The network must be partially operational and the catalog populated before tools can function.',
   },
-  5: {
+  6: {
     icon: '📡', name: 'Service Channels',
     why: 'Assigning channels before digital tools are deployed results in empty declarations. The shared platforms must be live and agencies actively using them before channel routing matters.',
   },
-  6: {
+  7: {
     icon: '🌟', name: 'Life Events',
     why: 'End-to-end life event automation depends on all prior layers: ADEL must carry automatic triggers across agencies, channels must route each sub-service correctly, and citizen-facing tools must be operational.',
   },

@@ -22,7 +22,7 @@ export const INFRASTRUCTURE_ZONES = [
   { id: 'cloud_a', name: 'Public Cloud A',     type: 'cloud',  capacity: 11, description: 'Modern cloud infrastructure — scalable, cost-effective' },
   { id: 'cloud_b', name: 'Public Cloud B',     type: 'cloud',  capacity: 11, description: 'Redundant cloud infrastructure — disaster recovery ready' },
   { id: 'hybrid',  name: 'Hybrid Secure Zone', type: 'hybrid', capacity: 4,  description: 'For sensitive agencies — private cloud + dedicated security (Road Police and Police require this)' },
-  { id: 'legacy',  name: 'Legacy Server Room', type: 'legacy', capacity: 2,  description: 'Existing on-premise — no migration needed but limited capability' },
+  { id: 'legacy',  name: 'Secure On-Premise',  type: 'legacy', capacity: 2,  description: 'Air-gapped on-premise servers — secure but limited cloud capability' },
 ]; // Total capacity 28 — enough for all 11 agencies
 
 export const DATA_FIELDS = [

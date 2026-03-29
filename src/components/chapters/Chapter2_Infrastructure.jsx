@@ -4,7 +4,7 @@ import { INFRASTRUCTURE_ZONES } from '../../gameData';
 import { calcInfraProgress } from '../../gameReducer';
 import { C } from '../../colors';
 
-const ZONE_ICONS = { cloud_a: '☁️', cloud_b: '☁️', hybrid: '🔐', legacy: '🖥️' };
+const ZONE_ICONS = { cloud_a: '☁️', cloud_b: '☁️', hybrid: '🔐', legacy: '🏢' };
 
 const CLASS_COLORS = {
   public: C.BLUE,
@@ -38,7 +38,7 @@ export default function Chapter1_Infrastructure({ state, dispatch }) {
     <div style={{ padding: '20px 0' }}>
       <h2 style={{ margin: '0 0 4px', color: C.ORANGE, fontSize: 20 }}>Layer 2 — Infrastructure</h2>
       <p style={{ color: C.MUTED, marginBottom: 16, fontSize: 13, lineHeight: 1.6 }}>
-        Migrate 11 core base registries to cloud zones. Sensitive agencies (🔒) require Hybrid. Budget: Cloud=2, Hybrid=3, Legacy=free.
+        Migrate 11 core base registries to cloud zones. Sensitive agencies (🔒) require Hybrid. Budget: Cloud=2, Hybrid=3, On-Premise=free.
       </p>
 
       <div style={{ marginBottom: 20 }}>
@@ -108,7 +108,7 @@ export default function Chapter1_Infrastructure({ state, dispatch }) {
           ['cloud_a', `Cloud A (${zoneCounts.cloud_a})`],
           ['cloud_b', `Cloud B (${zoneCounts.cloud_b})`],
           ['hybrid', `Hybrid (${zoneCounts.hybrid})`],
-          ['legacy', `Legacy (${zoneCounts.legacy})`],
+          ['legacy', `On-Premise (${zoneCounts.legacy})`],
         ].map(([key, label]) => (
           <button key={key} onClick={() => setFilter(key)} style={{
             padding: '5px 10px', borderRadius: 20, fontSize: 11,
@@ -155,7 +155,9 @@ export default function Chapter1_Infrastructure({ state, dispatch }) {
                   {agency.dataClassification}
                 </span>
                 <span style={{ color: agency.zone ? C.BLUE : C.FAINT }}>
-                  {agency.zone ? agency.zone.replace('_', ' ') : 'unmigrated'}
+                  {agency.zone
+                    ? { cloud_a: 'Cloud A', cloud_b: 'Cloud B', hybrid: 'Hybrid', legacy: 'On-Premise' }[agency.zone] || agency.zone
+                    : 'unmigrated'}
                 </span>
               </div>
             </div>
@@ -164,7 +166,7 @@ export default function Chapter1_Infrastructure({ state, dispatch }) {
       </div>
 
       <div style={{ marginTop: 16, padding: '10px 14px', background: C.CARD, borderRadius: 8, fontSize: 12, color: C.MUTED }}>
-        💡 Tap an agency to select it, then tap a zone to migrate it. Sensitive agencies (🔒) must go to Hybrid Secure Zone.
+        💡 Tap an agency to select it, then tap a zone to migrate it. Sensitive agencies (🔒) must go to Hybrid Secure Zone. On-Premise is free but counts as partial progress.
       </div>
     </div>
   );

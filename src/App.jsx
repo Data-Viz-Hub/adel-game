@@ -1,11 +1,11 @@
-import { useReducer, useState, useEffect } from 'react';
+import { useReducer, useState, useEffect, useRef } from 'react';
 import { gameReducer, createInitialState, getLayerProgress, isChapterUnlocked, getChapterPrerequisites } from './gameReducer';
 import { saveGame, loadGame, clearGame, hasSavedGame } from './storage';
 import { C } from './colors';
 import IntroScreen from './components/IntroScreen';
 import TopBar from './components/TopBar';
 import Navigation from './components/Navigation';
-import NotificationBar from './components/NotificationBar';
+// NotificationBar removed — notifications replaced by quarterly modal
 import VictoryScreen from './components/VictoryScreen';
 import GameOverScreen from './components/GameOverScreen';
 import TransformationView from './components/TransformationView';
@@ -51,6 +51,8 @@ export default function App() {
   const [victoryShown, setVictoryShown] = useState(false);
   const [showTransformation, setShowTransformation] = useState(false);
   const [lockModalOpen, setLockModalOpen] = useState(false);
+  const [quarterModal, setQuarterModal] = useState(null);
+  const lastQuarterRef = useRef(-1);
   // Detect an existing save once on mount
   const [hasSave] = useState(() => hasSavedGame());
 
@@ -65,6 +67,19 @@ export default function App() {
     const id = setInterval(() => dispatch({ type: 'TICK_TIME' }), 1000);
     return () => clearInterval(id);
   }, [started, state.gameLost, state.victoryUnlocked]);
+
+  // ── Quarterly modal: show once per 90-day quarter boundary ──
+  useEffect(() => {
+    if (!started || state.gameLost || state.victoryUnlocked) return;
+    const currentQ = Math.floor(state.gameDay / 90);
+    if (lastQuarterRef.current >= 0 && currentQ > lastQuarterRef.current) {
+      const qIndex = currentQ - 1; // the quarter that just completed
+      const qNum = (qIndex % 4) + 1;
+      const qYear = 2025 + Math.floor(qIndex / 4);
+      setQuarterModal({ q: qNum, year: qYear, daysLeft: Math.max(0, 730 - state.gameDay) });
+    }
+    lastQuarterRef.current = currentQ;
+  }, [state.gameDay, started, state.gameLost, state.victoryUnlocked]);
 
   function handleNewGame() {
     clearGame();
@@ -213,7 +228,6 @@ export default function App() {
         {renderChapter()}
       </main>
 
-      <NotificationBar notifications={state.notifications} dispatch={dispatch} />
       {showVictory && <VictoryScreen state={state} onClose={() => setShowVictory(false)} />}
       {showTransformation && <TransformationView state={state} onClose={() => setShowTransformation(false)} />}
       {lockModalOpen && locked && prerequisites && (
@@ -223,6 +237,63 @@ export default function App() {
           onClose={() => setLockModalOpen(false)}
           onNavigate={chapter => dispatch({ type: 'SET_CHAPTER', chapter })}
         />
+      )}
+
+      {/* Quarterly progress modal */}
+      {quarterModal && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1500, padding: '20px 16px',
+        }}>
+          <div style={{
+            background: C.CARD, borderRadius: 14, padding: '28px 32px',
+            maxWidth: 420, width: '100%',
+            border: `2px solid ${C.BLUE}44`,
+            boxShadow: '0 16px 48px rgba(0,0,0,0.2)',
+          }}>
+            <div style={{ fontSize: 36, textAlign: 'center', marginBottom: 10 }}>📅</div>
+            <h2 style={{
+              textAlign: 'center', margin: '0 0 6px',
+              color: C.BLUE, fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 28, fontWeight: 900, letterSpacing: '0.04em',
+            }}>
+              Q{quarterModal.q} {quarterModal.year}
+            </h2>
+            <p style={{ textAlign: 'center', color: C.MUTED, fontSize: 13, margin: '0 0 24px', lineHeight: 1.6 }}>
+              Another quarter of your transformation mandate has passed.<br />
+              Time is moving — keep building.
+            </p>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+              {[
+                { label: 'Days left', value: quarterModal.daysLeft },
+                { label: 'Budget', value: state.budget },
+                { label: 'Satisfaction', value: `${state.citizenSatisfaction}%` },
+                { label: 'Trust', value: `${state.trustIndex}%` },
+              ].map(m => (
+                <div key={m.label} style={{
+                  flex: 1, padding: '10px 6px',
+                  background: C.BG, borderRadius: 8, textAlign: 'center',
+                  border: `1px solid ${C.BORDER}`,
+                }}>
+                  <div style={{ fontSize: 18, fontWeight: 900, color: C.BLUE, fontFamily: "'DM Mono', monospace" }}>{m.value}</div>
+                  <div style={{ fontSize: 9, color: C.MUTED, marginTop: 2 }}>{m.label}</div>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => setQuarterModal(null)}
+              style={{
+                width: '100%', padding: '13px',
+                background: C.BLUE, border: 'none', color: '#fff',
+                borderRadius: 8, cursor: 'pointer',
+                fontSize: 14, fontWeight: 700,
+              }}
+            >
+              Continue Transformation
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Floating buttons — bottom-left stack */}

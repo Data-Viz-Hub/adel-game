@@ -395,15 +395,15 @@ export function formatGameDate(day) {
 
 // Day cost per action type
 const ACTION_DAYS = {
-  ASSIGN_AGENCY_TO_ZONE:   14,  // 2 weeks per migration
-  ALIGN_DATA_FIELD:         7,  // 1 week for alignment work
-  CATALOG_DATA_FIELD:       7,  // 1 week for catalog registration
-  ADVANCE_CONNECTION_STEP: 10,  // ~10 days per connection step
-  DEPLOY_TOOL:             21,  // 3 weeks to deploy a platform
-  ONBOARD_AGENCY:           7,  // 1 week per onboarding batch
-  ASSIGN_CHANNEL:           3,  // 3 days for channel decision
-  OPTIMIZE_LIFE_EVENT:     21,  // 3 weeks for end-to-end journey redesign
-  ENACT_LAW:               14,  // 2 weeks for parliamentary process
+  ASSIGN_AGENCY_TO_ZONE:   7,   // 1 week per migration
+  ALIGN_DATA_FIELD:         3,   // 3 days for alignment work
+  CATALOG_DATA_FIELD:       3,   // 3 days for catalog registration
+  ADVANCE_CONNECTION_STEP:  5,   // ~5 days per connection step
+  DEPLOY_TOOL:             10,   // ~2 weeks to deploy a platform
+  ONBOARD_AGENCY:           3,   // 3 days per onboarding batch
+  ASSIGN_CHANNEL:           1,   // 1 day for channel decision
+  OPTIMIZE_LIFE_EVENT:     10,   // ~2 weeks for end-to-end journey redesign
+  ENACT_LAW:                7,   // 1 week for parliamentary process
 };
 
 function advanceDay(state, actionType) {
